@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBS RTA Quote</title>
+    <title>DBS RTA Cabinet Quote</title>
     <style>
         :root {
-            --brand-blue: #1A365D; 
+            --brand-blue: #1A365D;
             --brand-light: #F7FAFC;
             --border-color: #E2E8F0;
             --text-main: #2D3748;
@@ -84,9 +84,6 @@
             box-sizing: border-box; font-size: 14px; font-family: inherit; background-color: var(--brand-light);
         }
 
-        .bill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .checkbox-label { display: inline-flex; align-items: center; font-size: 10px; color: #718096; cursor: pointer; }
-        
         .total-box { background-color: var(--brand-light); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;}
         .total-line { margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; color: #4A5568;}
         .grand-total { 
@@ -95,21 +92,14 @@
         }
 
         .btn-group { display: flex; gap: 10px; margin: 20px 0; }
-        button { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; transition: opacity 0.2s; }
-        .btn-internal { background-color: #1A365D; }
-        .btn-customer { background-color: #48BB78; }
-        .btn-clear { background-color: #718096; }
+        button.action-trigger { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; transition: opacity 0.2s; }
 
         .footer-terms { font-size: 11px; color: #718096; padding: 5px 0; margin-top: 15px;}
         .signature-line { display: flex; align-items: flex-end; font-weight: bold; font-size: 13px; color: var(--text-main); margin-top: 25px;}
         .signature-line span { flex: 1; border-bottom: 1px solid #A0AEC0; margin-left: 10px; height: 18px; }
         
         .business-footer { 
-            margin-top: 20px; 
-            text-align: center; 
-            font-style: italic; 
-            color: var(--text-main); 
-            line-height: 1.4;
+            margin-top: 20px; text-align: center; font-style: italic; color: var(--text-main); line-height: 1.4;
         }
         .business-footer p { margin: 1px 0; font-size: 12px; }
 
@@ -117,58 +107,22 @@
         @media print {
             @page { size: letter; margin: 0.25in; }
             body { background: white !important; padding: 0 !important; margin: 0 !important; }
+            .container { max-width: 100% !important; width: 100% !important; background: white !important; font-size: 13px; zoom: 0.85; }
             
-            .container { 
-                max-width: 100% !important; 
-                width: 100% !important; 
-                background: white !important; 
-                font-size: 13px; 
-                zoom: 0.85; 
-            }
-
             body::after {
-                content: "DBS";
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) rotate(-45deg);
-                font-size: 180px;
-                font-weight: 900;
-                color: rgba(0, 0, 0, 0.05) !important;
-                z-index: 9999;
-                pointer-events: none;
-                text-transform: uppercase;
+                content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+                font-size: 180px; font-weight: 900; color: rgba(0, 0, 0, 0.05) !important; z-index: 9999; pointer-events: none; text-transform: uppercase;
             }
 
             .btn-group, .action-btn { display: none !important; }
-            
-            .card { 
-                box-shadow: none !important; 
-                border: 1px solid #ccc !important; 
-                padding: 10px 18px !important; 
-                margin-bottom: 6px !important;
-                page-break-inside: avoid; 
-                background: transparent !important;
-            }
-            
-            .card-title { margin-bottom: 6px !important; font-size: 14px !important; }
-            .header-banner { padding: 12px 25px !important; margin-bottom: 12px !important; border: 1px solid #bbb; background: #f4f4f4 !important; color: black !important;}
-            .header-text h1 { color: black !important; font-size: 24px !important; }
-            
             .hide-for-print { display: none !important; }
             
-            input, textarea, select { 
-                border: none !important; 
-                background: transparent !important; 
-                font-size: 14px !important;
-                font-weight: 600;
-                color: black !important;
-            }
-            label { color: #444 !important; font-size: 11px !important; }
-            
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px 18px !important; margin-bottom: 6px !important; page-break-inside: avoid; background: transparent !important; }
+            .header-banner { padding: 12px 25px !important; margin-bottom: 12px !important; border: 1px solid #bbb; background: #f4f4f4 !important; color: black !important;}
+            .header-text h1 { color: black !important; font-size: 24px !important; }
+            input, textarea, select { border: none !important; background: transparent !important; font-size: 14px !important; font-weight: 600; color: black !important; }
             .total-box { padding: 12px 20px !important; border: 2px solid #000 !important; margin-top: 8px !important; }
             .grand-total { font-size: 22px !important; color: black !important; border-top: 2px solid #000 !important; }
-            .signature-line span { border-bottom: 1px solid #000; }
         }
     </style>
 </head>
@@ -178,7 +132,7 @@
     <div class="header-banner">
         <img src="dbs-logo.png" alt="DBS" class="logo">
         <div class="header-text">
-            <h1 id="print-title">RTA QUOTE</h1>
+            <h1 id="print-title">RTA CABINET QUOTE</h1>
             <p>Ready-to-Assemble Custom Cabinet Boxes</p>
         </div>
     </div>
@@ -186,19 +140,18 @@
     <div class="card">
         <h2 class="card-title">Customer & Order Details</h2>
         <div class="grid-2">
-            <div><label>Customer Name</label><input type="text" id="custName" oninput="runMath()"></div>
-            <div><label>Customer Account #</label><input type="text" id="custAcc" oninput="runMath()"></div>
+            <div><label>Customer Name</label><input type="text" id="custName"></div>
+            <div><label>Customer Account #</label><input type="text" id="custAcc"></div>
         </div>
         <div class="grid-2">
-            <div><label>PO Number</label><input type="text" id="poNum" oninput="runMath()"></div>
-            <div><label>Quote Date</label><input type="date" id="quoteDate" oninput="runMath()"></div>
+            <div><label>PO Number</label><input type="text" id="poNum"></div>
+            <div><label>Quote Date</label><input type="date" id="quoteDate"></div>
         </div>
         <div class="grid-2">
-            <div><label>Quoted By</label><input type="text" id="quotedBy" oninput="runMath()"></div>
+            <div><label>Quoted By</label><input type="text" id="quotedBy"></div>
             <div>
                 <label>Ship Method</label>
-                <select id="shipMethod" onchange="runMath()">
-                    <option value="">-- Select Method --</option>
+                <select id="shipMethod">
                     <option value="DBS">DBS</option>
                     <option value="WC">WC</option>
                     <option value="LTL">LTL</option>
@@ -206,14 +159,8 @@
             </div>
         </div>
         <div class="grid-2">
-            <div><label>Ship To Address</label><textarea id="shipAddr" rows="2" oninput="syncAddr(); runMath()"></textarea></div>
-            <div>
-                <div class="bill-header">
-                    <label style="margin-bottom:0;">Bill To Address</label>
-                    <label class="checkbox-label"><input type="checkbox" id="sameAsShip" onchange="syncAddr()"> Same as Ship To</label>
-                </div>
-                <textarea id="billAddr" rows="2" oninput="runMath()"></textarea>
-            </div>
+            <div><label>Ship To Address</label><textarea id="shipAddr" rows="2"></textarea></div>
+            <div><label>Bill To Address</label><textarea id="billAddr" rows="2"></textarea></div>
         </div>
     </div>
 
@@ -221,22 +168,22 @@
         <h2 class="card-title">Materials & Specifications</h2>
         <div id="cabContainer">
             <div class="dynamic-row">
-                <div><label>Cabinet Material Name</label><input type="text" class="cabName" oninput="runMath()"></div>
+                <div><label>Cabinet Material Name</label><input type="text" class="cabName"></div>
                 <div><label>Number of Cabinets</label><input type="number" class="cabCount" value="0" oninput="runMath()"></div>
                 <button class="action-btn add-btn" onclick="addRow('cabContainer')">+</button>
             </div>
         </div>
         <div id="doorContainer" style="margin-top: 10px;">
             <div class="dynamic-row">
-                <div><label>Door Type / Material</label><input type="text" class="doorName" oninput="runMath()"></div>
+                <div><label>Door Type / Material</label><input type="text" class="doorName"></div>
                 <div><label>Door Sq Ft</label><input type="number" class="doorSqFt" value="0" oninput="runMath()"></div>
                 <button class="action-btn add-btn" onclick="addRow('doorContainer')">+</button>
             </div>
         </div>
     </div>
 
-    <div class="card pricing-card" id="pricingSection">
-        <h2 class="card-title">Pricing, Labor & Margins</h2>
+    <div class="card pricing-card hide-for-print" id="pricingSection">
+        <h2 class="card-title">Internal Pricing & Discounts</h2>
         <div class="grid-2">
             <div><label>Material Cost ($)</label><input type="number" id="matCost" value="0" oninput="runMath()"></div>
             <div><label>Margin (%)</label><input type="number" id="margPct" value="40" oninput="runMath()"></div>
@@ -251,19 +198,21 @@
         </div>
         <div class="grid-2">
             <div><label>Local Tax Rate (%)</label><input type="number" id="taxRate" value="0" oninput="runMath()"></div>
+            <div><label>Discount / Adjustment ($)</label><input type="number" id="discount" value="0" oninput="runMath()" style="color:red; font-weight:bold;"></div>
         </div>
     </div>
 
     <div class="btn-group">
-        <button class="btn-internal" onclick="doPrint('internal')">🖨️ Print Internal Copy</button>
-        <button class="btn-customer" onclick="doPrint('customer')">🖨️ Print Customer Copy</button>
-        <button class="btn-clear" onclick="clearForm()">🔄 Clear Form</button>
+        <button class="action-trigger" id="saveBtn" style="background-color: #3182CE;" onclick="saveToSheets()">💾 Save to Sheets</button>
+        <button class="action-trigger" style="background-color: #1A365D;" onclick="doPrint('internal')">🖨️ Internal Copy</button>
+        <button class="action-trigger" style="background-color: #48BB78;" onclick="doPrint('customer')">🖨️ Customer Copy</button>
+        <button class="action-trigger" style="background-color: #718096;" onclick="location.reload()">🔄 Clear Form</button>
     </div>
 
     <div class="total-box">
         <div class="total-line"><span>Subtotal:</span> <span id="outSubtotal">$0.00</span></div>
         <div class="total-line"><span>Shipping:</span> <span id="outShip">$0.00</span></div>
-        <div class="total-line"><span>Tax:</span> <span id="outTax">$0.00</span></div>
+        <div class="total-line" id="taxRow"><span>Tax:</span> <span id="outTax">$0.00</span></div>
         <div class="grand-total"><span>Total:</span> <span id="outTotal">$0.00</span></div>
     </div>
 
@@ -282,17 +231,11 @@
 <script>
     document.getElementById('quoteDate').valueAsDate = new Date();
 
-    function syncAddr() {
-        const s = document.getElementById('shipAddr'), b = document.getElementById('billAddr');
-        if (document.getElementById('sameAsShip').checked) { b.value = s.value; b.readOnly = true; } 
-        else { b.readOnly = false; }
-    }
-
     function addRow(id) {
         const div = document.createElement('div');
         div.className = 'dynamic-row';
         const isCab = id === 'cabContainer';
-        div.innerHTML = `<div><input type="text" class="${isCab?'cabName':'doorName'}" oninput="runMath()"></div>
+        div.innerHTML = `<div><input type="text" class="${isCab?'cabName':'doorName'}"></div>
                          <div><input type="number" class="${isCab?'cabCount':'doorSqFt'}" value="0" oninput="runMath()"></div>
                          <button class="action-btn remove-btn" onclick="this.parentElement.remove(); runMath()">×</button>`;
         document.getElementById(id).appendChild(div);
@@ -307,22 +250,27 @@
         const shp = parseFloat(document.getElementById('ship').value) || 0;
         const labor = (parseFloat(document.getElementById('sheets').value) || 0) * (parseFloat(document.getElementById('labor').value) || 0);
         const tRate = parseFloat(document.getElementById('taxRate').value) || 0;
+        const disc = parseFloat(document.getElementById('discount').value) || 0;
 
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
-        const sub = matTotal + (totalSqFt * dCost) + labor;
+        const sub = (matTotal + (totalSqFt * dCost) + labor) - disc;
         const tax = (sub + shp) * (tRate / 100);
         
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
         document.getElementById('outTotal').innerText = '$' + (sub + shp + tax).toLocaleString(undefined,{minimumFractionDigits:2});
+
+        const tRow = document.getElementById('taxRow');
+        tRow.style.display = tax <= 0 ? "none" : "flex";
     }
 
-    function doPrint(type) {
-        const pricing = document.getElementById('pricingSection');
-        const title = document.getElementById('print-title');
+    async function saveToSheets() {
+        const btn = document.getElementById('saveBtn');
+        const po = document.getElementById('poNum').value;
+        if (!po) { alert("PO Number is required."); return; }
+        btn.disabled = true; btn.innerText = "Saving...";
 
-        // GATHER DATA FOR GOOGLE SHEETS
         let cabSummary = "";
         document.querySelectorAll('#cabContainer .dynamic-row').forEach(row => {
             cabSummary += row.querySelector('.cabName').value + "(" + row.querySelector('.cabCount').value + "); ";
@@ -335,14 +283,12 @@
         const allData = {
             Customer: document.getElementById('custName').value,
             Account: document.getElementById('custAcc').value,
-            PO: document.getElementById('poNum').value,
-            Date: document.getElementById('quoteDate').value,
+            PO: po, Date: document.getElementById('quoteDate').value,
             By: document.getElementById('quotedBy').value,
             ShipMethod: document.getElementById('shipMethod').value,
             ShipAddr: document.getElementById('shipAddr').value,
             BillAddr: document.getElementById('billAddr').value,
-            Cabinets: cabSummary,
-            Doors: doorSummary,
+            Cabinets: cabSummary, Doors: doorSummary,
             MatCost: document.getElementById('matCost').value,
             Margin: document.getElementById('margPct').value,
             DoorCost: document.getElementById('doorCost').value,
@@ -350,51 +296,35 @@
             Sheets: document.getElementById('sheets').value,
             Labor: document.getElementById('labor').value,
             TaxRate: document.getElementById('taxRate').value,
+            Discount: document.getElementById('discount').value,
             Subtotal: document.getElementById('outSubtotal').innerText,
             TaxAmount: document.getElementById('outTax').innerText,
             GrandTotal: document.getElementById('outTotal').innerText
         };
 
-        // GOOGLE SHEET SYNC - REPLACE URL BELOW
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzKrzASmYjEyRyuVfwUAEVUMZ0awMH7ogS-OWVAM2IebbAFGCXl8fvU86f7Wirh_TJWwg/exec';
-        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) });
+        const scriptURL = 'PASTE_YOUR_NEW_URL_HERE';
+        try {
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) });
+            btn.innerText = "✅ Saved"; btn.style.backgroundColor = "#48BB78";
+        } catch (e) {
+            alert("Error saving."); btn.disabled = false; btn.innerText = "💾 Save to Sheets";
+        }
+    }
 
+    function doPrint(type) {
+        const pricing = document.getElementById('pricingSection');
+        const title = document.getElementById('print-title');
         if (type === 'customer') {
             pricing.classList.add('hide-for-print');
-            title.innerText = "RTA CUSTOMER QUOTE";
+            title.innerText = "RTA Cabinet Quote";
         } else {
             pricing.classList.remove('hide-for-print');
             title.innerText = "RTA INTERNAL QUOTE";
         }
-        
         window.print();
-        title.innerText = "RTA QUOTE";
         pricing.classList.remove('hide-for-print');
-    }
-
-    function clearForm() {
-        if (confirm("Are you sure?")) {
-            const inputs = document.querySelectorAll('input, textarea, select');
-            inputs.forEach(input => {
-                if (input.type === 'number') input.value = 0;
-                else if (input.type === 'checkbox') input.checked = false;
-                else if (input.type !== 'date') input.value = '';
-            });
-            document.getElementById('margPct').value = 40;
-            document.getElementById('taxRate').value = 0;
-            document.getElementById('quoteDate').valueAsDate = new Date();
-            const resetDynamicContainer = (id) => {
-                const container = document.getElementById(id);
-                const rows = container.querySelectorAll('.dynamic-row');
-                for (let i = 1; i < rows.length; i++) rows[i].remove();
-            };
-            resetDynamicContainer('cabContainer');
-            resetDynamicContainer('doorContainer');
-            document.getElementById('billAddr').readOnly = false;
-            runMath();
-        }
+        title.innerText = "RTA CABINET QUOTE";
     }
 </script>
 </body>
 </html>
-
