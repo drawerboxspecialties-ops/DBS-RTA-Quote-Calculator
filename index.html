@@ -169,13 +169,22 @@
         const labor = (parseFloat(document.getElementById('sheets').value) || 0) * (parseFloat(document.getElementById('labor').value) || 0);
         const tRate = parseFloat(document.getElementById('taxRate').value) || 0;
         const disc = parseFloat(document.getElementById('discount').value) || 0;
+        
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
+        
+        // Subtotal = Cabinets + Doors + Labor - Discount
         const sub = (matTotal + (sqft * dCost) + labor) - disc;
-        const tax = (sub + shp) * (tRate / 100);
+        
+        // Tax is calculated ONLY on the Subtotal (excludes shipping)
+        const tax = sub * (tRate / 100);
+        
+        // Grand Total = Subtotal + Shipping + Tax
+        const grandTotal = sub + shp + tax;
+
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
-        document.getElementById('outTotal').innerText = '$' + (sub + shp + tax).toLocaleString(undefined,{minimumFractionDigits:2});
+        document.getElementById('outTotal').innerText = '$' + grandTotal.toLocaleString(undefined,{minimumFractionDigits:2});
         document.getElementById('taxRow').style.display = tax <= 0 ? "none" : "flex";
     }
     async function saveToSheets() {
