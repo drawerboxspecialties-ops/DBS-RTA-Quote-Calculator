@@ -172,20 +172,22 @@
         
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
         
-        // Subtotal = Cabinets + Doors + Labor - Discount
+        // 1. Calculate Subtotal (Items + Labor - Discount)
         const sub = (matTotal + (sqft * dCost) + labor) - disc;
         
-        // Tax is calculated ONLY on the Subtotal (excludes shipping)
+        // 2. Calculate Tax strictly on Subtotal ONLY (Excludes shipping)
         const tax = sub * (tRate / 100);
         
-        // Grand Total = Subtotal + Shipping + Tax
-        const grandTotal = sub + shp + tax;
+        // 3. Final Total = Subtotal + Tax + Shipping
+        const grandTotal = sub + tax + shp;
 
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
         document.getElementById('outTotal').innerText = '$' + grandTotal.toLocaleString(undefined,{minimumFractionDigits:2});
-        document.getElementById('taxRow').style.display = tax <= 0 ? "none" : "flex";
+        
+        const tRow = document.getElementById('taxRow');
+        tRow.style.display = tax <= 0 ? "none" : "flex";
     }
     async function saveToSheets() {
         const btn = document.getElementById('saveBtn'); const po = document.getElementById('poNum').value;
