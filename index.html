@@ -160,35 +160,52 @@
                          <button class="action-btn remove-btn" onclick="this.parentElement.remove(); runMath()">×</button>`;
         document.getElementById(id).appendChild(div);
     }
+
     function runMath() {
-        let sqft = 0; document.querySelectorAll('.doorSqFt').forEach(el => sqft += parseFloat(el.value) || 0);
+        // GATHER ALL INPUTS
+        let sqft = 0; 
+        document.querySelectorAll('.doorSqFt').forEach(el => sqft += parseFloat(el.value) || 0);
+        
         const mCost = parseFloat(document.getElementById('matCost').value) || 0;
         const mPct = parseFloat(document.getElementById('margPct').value) || 0;
         const dCost = parseFloat(document.getElementById('doorCost').value) || 0;
         const shp = parseFloat(document.getElementById('ship').value) || 0;
-        const labor = (parseFloat(document.getElementById('sheets').value) || 0) * (parseFloat(document.getElementById('labor').value) || 0);
+        const laborCount = parseFloat(document.getElementById('sheets').value) || 0;
+        const laborRate = parseFloat(document.getElementById('labor').value) || 0;
         const tRate = parseFloat(document.getElementById('taxRate').value) || 0;
         const disc = parseFloat(document.getElementById('discount').value) || 0;
-        
+
+        // CALCULATE LABOR TOTAL
+        const totalLabor = laborCount * laborRate;
+
+        // CALCULATE MATERIAL WITH MARGIN
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
         
-        // 1. Calculate Subtotal (Items + Labor - Discount)
-        const sub = (matTotal + (sqft * dCost) + labor) - disc;
+        // 1. CALCULATE SUBTOTAL (The taxable amount)
+        // items + labor - discount
+        const subtotalValue = (matTotal + (sqft * dCost) + totalLabor) - disc;
         
-        // 2. Calculate Tax strictly on Subtotal ONLY (Excludes shipping)
-        const tax = sub * (tRate / 100);
+        // 2. CALCULATE TAX (Strictly on subtotal value only)
+        const calculatedTax = subtotalValue * (tRate / 100);
         
-        // 3. Final Total = Subtotal + Tax + Shipping
-        const grandTotal = sub + tax + shp;
+        // 3. CALCULATE GRAND TOTAL (Subtotal + Tax + Non-taxable Shipping)
+        const finalGrandTotal = subtotalValue + calculatedTax + shp;
 
-        document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
+        // UPDATE THE USER INTERFACE
+        document.getElementById('outSubtotal').innerText = '$' + subtotalValue.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
-        document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
-        document.getElementById('outTotal').innerText = '$' + grandTotal.toLocaleString(undefined,{minimumFractionDigits:2});
+        document.getElementById('outTax').innerText = '$' + calculatedTax.toFixed(2);
+        document.getElementById('outTotal').innerText = '$' + finalGrandTotal.toLocaleString(undefined,{minimumFractionDigits:2});
         
+        // VISIBILITY OF TAX ROW
         const tRow = document.getElementById('taxRow');
-        tRow.style.display = tax <= 0 ? "none" : "flex";
+        if (calculatedTax <= 0) {
+            tRow.style.display = "none";
+        } else {
+            tRow.style.display = "flex";
+        }
     }
+
     async function saveToSheets() {
         const btn = document.getElementById('saveBtn'); const po = document.getElementById('poNum').value;
         if (!po) { alert("PO Number is required."); return; }
