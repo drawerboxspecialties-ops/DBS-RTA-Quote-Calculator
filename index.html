@@ -5,54 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DBS RTA Cabinet Quote</title>
     <style>
-        :root { --brand-blue: #1A365D; --brand-light: #F7FAFC; --border-color: #E2E8F0; --text-main: #2D3748; --bg-color: #E2E8F0; }
+        :root {
+            --brand-blue: #1A365D; --brand-light: #F7FAFC; --border-color: #E2E8F0;
+            --text-main: #2D3748; --bg-color: #E2E8F0;
+        }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; padding: 20px; margin: 0; }
         .container { background-color: var(--bg-color); width: 100%; max-width: 800px; position: relative; }
         
+        /* ORIGINAL HEADER STYLE */
         .header-banner { background-color: var(--brand-blue); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; }
-        .header-banner img.logo { height: 45px; }
+        .header-banner img.logo { height: 45px; object-fit: contain; }
         .header-text { text-align: right; }
-        .header-text h1 { margin: 0; font-size: 22px; }
-        
-        /* Search Bar Style */
+        .header-text h1 { margin: 0; font-size: 22px; letter-spacing: 1px; }
+        .header-text p { margin: 2px 0 0 0; font-size: 12px; opacity: 0.8; }
+
+        /* SEARCH & LOOKUP UI (HIDDEN ON PRINT) */
         .search-card { background: #2D3748; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .search-card input { flex: 1; background: white; color: black; padding: 10px; border-radius: 4px; border: none; }
         .search-card button { background: #4A5568; padding: 10px 20px; border-radius: 6px; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .lookup-group { display: flex; gap: 5px; }
+        .lookup-btn { background: var(--brand-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-size: 10px; font-weight: bold; }
 
+        /* MODAL POPUP */
+        #modalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 8px; padding: 20px; color: var(--text-main); }
+        .cust-item { padding: 12px; border: 1px solid #eee; margin-bottom: 8px; cursor: pointer; border-radius: 6px; }
+        .cust-item:hover { background: #f0f7ff; border-color: var(--brand-blue); }
+
+        /* CARDS & GRID */
         .card { background-color: #fff; border-radius: 8px; padding: 20px 25px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
         .card-title { font-size: 14px; color: var(--brand-blue); border-bottom: 1.5px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 10px; }
-        
-        .lookup-group { display: flex; gap: 5px; }
-        .lookup-btn { background: var(--brand-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-
-        /* Modal / Pop-up Styling */
-        #modalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 8px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-header { font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; }
-        .cust-item { padding: 10px; border: 1px solid #eee; margin-bottom: 8px; cursor: pointer; border-radius: 4px; transition: background 0.2s; }
-        .cust-item:hover { background: #f0f7ff; border-color: var(--brand-blue); }
-        .cust-item strong { color: var(--brand-blue); display: block; }
-        .cust-item small { color: #666; font-size: 11px; }
-
         .dynamic-row { display: grid; grid-template-columns: 1fr 1fr 35px; gap: 20px; margin-bottom: 8px; align-items: end; }
-        .action-btn { width: 30px; height: 30px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        
+        .action-btn { width: 30px; height: 30px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; }
         label { display: block; font-weight: bold; margin-bottom: 4px; color: #4A5568; font-size: 11px; text-transform: uppercase; }
         input, textarea, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background-color: var(--brand-light); }
+
+        /* TOTALS */
         .total-box { background-color: var(--brand-light); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;}
+        .total-line { margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; color: #4A5568;}
         .grand-total { font-size: 22px; font-weight: bold; color: var(--brand-blue); border-top: 2px solid var(--border-color); padding-top: 10px; display: flex; justify-content: space-between; }
+
+        /* FOOTER & BUTTONS */
         .btn-group { display: flex; gap: 10px; margin: 20px 0; }
         button.action-trigger { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; }
-        .business-footer { margin-top: 20px; text-align: center; font-style: italic; color: var(--text-main); font-size: 12px; line-height: 1.4; }
+        .footer-terms { font-size: 11px; color: #718096; margin-top: 15px;}
+        .signature-line { display: flex; align-items: flex-end; font-weight: bold; font-size: 13px; margin-top: 25px;}
+        .signature-line span { flex: 1; border-bottom: 1px solid #A0AEC0; margin-left: 10px; height: 18px; }
+        .business-footer { margin-top: 20px; text-align: center; font-style: italic; font-size: 12px; line-height: 1.4; }
 
+        /* --- RESTORED ORIGINAL PRINT STYLES --- */
         @media print {
-            .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
+            @page { size: letter; margin: 0.25in; }
+            body { background: white !important; padding: 0 !important; margin: 0 !important; }
             .container { max-width: 100% !important; width: 100% !important; background: white !important; zoom: 0.85; }
-            body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05); z-index: 9999; pointer-events: none; }
-            .card { border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 6px !important; }
-            input, textarea, select { border: none !important; background: transparent !important; font-weight: 600; }
-            .total-box { border: 2px solid #000 !important; }
+            
+            /* Watermark */
+            body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05) !important; z-index: 9999; pointer-events: none; }
+
+            /* Hide UI Elements */
+            .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
+            
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px 18px !important; margin-bottom: 6px !important; page-break-inside: avoid; background: transparent !important; }
+            .header-banner { padding: 12px 25px !important; margin-bottom: 12px !important; border: 1px solid #bbb; background: #f4f4f4 !important; color: black !important;}
+            .header-text h1 { color: black !important; font-size: 24px !important; }
+            input, textarea, select { border: none !important; background: transparent !important; color: black !important; font-weight: 600; padding: 2px 0 !important; }
+            .total-box { border: 2px solid #000 !important; padding: 12px 20px !important; }
+            .grand-total { border-top: 2px solid #000 !important; color: black !important; }
         }
     </style>
 </head>
@@ -60,7 +81,10 @@
 
 <div id="modalOverlay">
     <div class="modal-content">
-        <div class="modal-header"><span>Select Customer</span><span onclick="closeModal()" style="cursor:pointer">×</span></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:15px; font-weight:bold;">
+            <span>Select Previous Customer</span>
+            <span onclick="closeModal()" style="cursor:pointer; font-size:20px;">&times;</span>
+        </div>
         <div id="customerList"></div>
     </div>
 </div>
@@ -75,7 +99,7 @@
     </div>
 
     <div class="search-card">
-        <input type="text" id="searchPO" placeholder="Load Existing PO to Requote/Overwrite...">
+        <input type="text" id="searchPO" placeholder="Enter PO Number to load/revise existing quote...">
         <button onclick="universalSearch('po')">🔍 Load PO</button>
     </div>
 
@@ -85,7 +109,7 @@
             <div>
                 <label>Customer Name</label>
                 <div class="lookup-group">
-                    <input type="text" id="custName" placeholder="Enter name...">
+                    <input type="text" id="custName" placeholder="Type name...">
                     <button class="lookup-btn" onclick="universalSearch('customer')">🔍 Lookup</button>
                 </div>
             </div>
@@ -126,7 +150,7 @@
         </div>
     </div>
 
-    <div class="card pricing-card hide-for-print" id="pricingSection">
+    <div class="card hide-for-print" id="pricingSection">
         <h2 class="card-title">Internal Pricing & Discounts</h2>
         <div class="grid-2">
             <div><label>Material Cost ($)</label><input type="number" id="matCost" value="0" oninput="runMath()"></div>
@@ -154,9 +178,9 @@
     </div>
 
     <div class="total-box">
-        <div class="total-line" style="display:flex; justify-content:space-between"><span>Subtotal:</span> <span id="outSubtotal">$0.00</span></div>
-        <div class="total-line" style="display:flex; justify-content:space-between"><span>Shipping:</span> <span id="outShip">$0.00</span></div>
-        <div class="total-line" id="taxRow" style="display:none; justify-content:space-between"><span>Tax:</span> <span id="outTax">$0.00</span></div>
+        <div class="total-line"><span>Subtotal:</span> <span id="outSubtotal">$0.00</span></div>
+        <div class="total-line"><span>Shipping:</span> <span id="outShip">$0.00</span></div>
+        <div class="total-line" id="taxRow" style="display:none;"><span>Tax:</span> <span id="outTax">$0.00</span></div>
         <div class="grand-total"><span>Total:</span> <span id="outTotal">$0.00</span></div>
     </div>
 
@@ -181,19 +205,14 @@
 
     async function universalSearch(type) {
         let val = (type === 'po') ? document.getElementById('searchPO').value : document.getElementById('custName').value;
-        if (!val) return alert("Enter search term.");
-
+        if (!val) return alert("Search term required.");
         try {
             const response = await fetch(`${scriptURL}?${type}=${val}`);
             const result = await response.json();
-            
-            if (result.status === "found" && type === 'po') {
-                fillForm(result.data, true);
-                alert("Quote Loaded.");
-            } else if (result.status === "list" && type === 'customer') {
-                showCustomerList(result.data);
-            } else { alert("Not found."); }
-        } catch (e) { alert("Error."); }
+            if (result.status === "found" && type === 'po') { fillForm(result.data, true); }
+            else if (result.status === "list" && type === 'customer') { showCustomerList(result.data); }
+            else { alert("Not found."); }
+        } catch (e) { alert("Search Error."); }
     }
 
     function showCustomerList(matches) {
@@ -202,7 +221,7 @@
         matches.forEach(c => {
             const div = document.createElement('div');
             div.className = 'cust-item';
-            div.innerHTML = `<strong>${c.name}</strong><small>Acc: ${c.account} | ${c.ship.substring(0,30)}...</small>`;
+            div.innerHTML = `<strong>${c.name}</strong><small>Acc: ${c.account} | ${c.ship.substring(0,40)}...</small>`;
             div.onclick = () => {
                 document.getElementById('custName').value = c.name;
                 document.getElementById('custAcc').value = c.account;
@@ -223,6 +242,8 @@
             if(d[4]) document.getElementById('quoteDate').value = new Date(d[4]).toISOString().split('T')[0];
             document.getElementById('quotedBy').value = d[5];
             document.getElementById('shipMethod').value = d[6];
+            document.getElementById('shipAddr').value = d[7];
+            document.getElementById('billAddr').value = d[8];
             document.getElementById('matCost').value = d[11];
             document.getElementById('margPct').value = d[12];
             document.getElementById('doorCost').value = d[13];
@@ -232,36 +253,19 @@
             document.getElementById('taxRate').value = d[17];
             document.getElementById('discount').value = d[21] || 0;
             runMath();
+            alert("Quote Loaded.");
         }
-        document.getElementById('shipAddr').value = d[7];
-        document.getElementById('billAddr').value = d[8];
     }
 
-    // saveToSheets, addRow, runMath, doPrint functions same as previous version...
-    async function saveToSheets() {
-        const btn = document.getElementById('saveBtn'); const po = document.getElementById('poNum').value;
-        if (!po) return alert("PO Number required.");
-        btn.disabled = true; btn.innerText = "Syncing...";
-        let cabs = ""; document.querySelectorAll('#cabContainer .dynamic-row').forEach(r => cabs += r.querySelector('.cabName').value + "(" + r.querySelector('.cabCount').value + "); ");
-        let doors = ""; document.querySelectorAll('#doorContainer .dynamic-row').forEach(r => doors += r.querySelector('.doorName').value + "(" + r.querySelector('.doorSqFt').value + "sqft); ");
-        const allData = { Customer: document.getElementById('custName').value, Account: document.getElementById('custAcc').value, PO: po, Date: document.getElementById('quoteDate').value, By: document.getElementById('quotedBy').value, ShipMethod: document.getElementById('shipMethod').value, ShipAddr: document.getElementById('shipAddr').value, BillAddr: document.getElementById('billAddr').value, Cabinets: cabs, Doors: doors, MatCost: document.getElementById('matCost').value, Margin: document.getElementById('margPct').value, DoorCost: document.getElementById('doorCost').value, Shipping: document.getElementById('ship').value, Sheets: document.getElementById('sheets').value, Labor: document.getElementById('labor').value, TaxRate: document.getElementById('taxRate').value, Discount: document.getElementById('discount').value, Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, GrandTotal: document.getElementById('outTotal').innerText };
-        try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) }); btn.innerText = "✅ Synced"; btn.style.backgroundColor = "#48BB78"; }
-        catch (e) { alert("Error."); }
-        setTimeout(() => { btn.disabled = false; btn.innerText = "💾 Sync/Save to Sheets"; btn.style.backgroundColor = "#3182CE"; }, 2500);
-    }
-    function addRow(id) {
-        const div = document.createElement('div'); div.className = 'dynamic-row';
-        div.innerHTML = `<div><input type="text" class="${id==='cabContainer'?'cabName':'doorName'}"></div>
-                         <div><input type="number" class="${id==='cabContainer'?'cabCount':'doorSqFt'}" value="0" oninput="runMath()"></div>
-                         <button class="action-btn" style="background:#E53E3E" onclick="this.parentElement.remove(); runMath()">×</button>`;
-        document.getElementById(id).appendChild(div);
-    }
     function runMath() {
         let sqft = 0; document.querySelectorAll('.doorSqFt').forEach(el => sqft += parseFloat(el.value) || 0);
-        const mCost = parseFloat(document.getElementById('matCost').value) || 0, mPct = parseFloat(document.getElementById('margPct').value) || 0;
-        const dCost = parseFloat(document.getElementById('doorCost').value) || 0, shp = parseFloat(document.getElementById('ship').value) || 0;
+        const mCost = parseFloat(document.getElementById('matCost').value) || 0;
+        const mPct = parseFloat(document.getElementById('margPct').value) || 0;
+        const dCost = parseFloat(document.getElementById('doorCost').value) || 0;
+        const shp = parseFloat(document.getElementById('ship').value) || 0;
         const labor = (parseFloat(document.getElementById('sheets').value) || 0) * (parseFloat(document.getElementById('labor').value) || 0);
-        const tRate = parseFloat(document.getElementById('taxRate').value) || 0, disc = parseFloat(document.getElementById('discount').value) || 0;
+        const tRate = parseFloat(document.getElementById('taxRate').value) || 0;
+        const disc = parseFloat(document.getElementById('discount').value) || 0;
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
         const sub = (matTotal + (sqft * dCost) + labor) - disc;
         const tax = sub * (tRate / 100);
@@ -271,6 +275,27 @@
         document.getElementById('outTotal').innerText = '$' + (sub + tax + shp).toLocaleString(undefined,{minimumFractionDigits:2});
         document.getElementById('taxRow').style.display = tax <= 0 ? "none" : "flex";
     }
+
+    async function saveToSheets() {
+        const btn = document.getElementById('saveBtn'); const po = document.getElementById('poNum').value;
+        if (!po) return alert("PO Number required.");
+        btn.disabled = true; btn.innerText = "Syncing...";
+        let cabs = ""; document.querySelectorAll('#cabContainer .dynamic-row').forEach(r => cabs += r.querySelector('.cabName').value + "(" + r.querySelector('.cabCount').value + "); ");
+        let doors = ""; document.querySelectorAll('#doorContainer .dynamic-row').forEach(r => doors += r.querySelector('.doorName').value + "(" + r.querySelector('.doorSqFt').value + "sqft); ");
+        const allData = { Customer: document.getElementById('custName').value, Account: document.getElementById('custAcc').value, PO: po, Date: document.getElementById('quoteDate').value, By: document.getElementById('quotedBy').value, ShipMethod: document.getElementById('shipMethod').value, ShipAddr: document.getElementById('shipAddr').value, BillAddr: document.getElementById('billAddr').value, Cabinets: cabs, Doors: doors, MatCost: document.getElementById('matCost').value, Margin: document.getElementById('margPct').value, DoorCost: document.getElementById('doorCost').value, Shipping: document.getElementById('ship').value, Sheets: document.getElementById('sheets').value, Labor: document.getElementById('labor').value, TaxRate: document.getElementById('taxRate').value, Discount: document.getElementById('discount').value, Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, GrandTotal: document.getElementById('outTotal').innerText };
+        try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) }); btn.innerText = "✅ Synced"; btn.style.backgroundColor = "#48BB78"; }
+        catch (e) { alert("Save error."); }
+        setTimeout(() => { btn.disabled = false; btn.innerText = "💾 Sync/Save to Sheets"; btn.style.backgroundColor = "#3182CE"; }, 2500);
+    }
+
+    function addRow(id) {
+        const div = document.createElement('div'); div.className = 'dynamic-row';
+        div.innerHTML = `<div><input type="text" class="${id==='cabContainer'?'cabName':'doorName'}"></div>
+                         <div><input type="number" class="${id==='cabContainer'?'cabCount':'doorSqFt'}" value="0" oninput="runMath()"></div>
+                         <button class="action-btn" style="background:#E53E3E" onclick="this.parentElement.remove(); runMath()">×</button>`;
+        document.getElementById(id).appendChild(div);
+    }
+
     function doPrint(type) {
         const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), footer = document.getElementById('customer-footer');
         if (type === 'customer') { pricing.classList.add('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA Cabinet Quote"; } 
@@ -280,4 +305,3 @@
 </script>
 </body>
 </html>
-
