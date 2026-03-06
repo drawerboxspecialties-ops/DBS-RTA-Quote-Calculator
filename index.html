@@ -5,146 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DBS RTA Cabinet Quote</title>
     <style>
-        :root {
-            --brand-blue: #1A365D;
-            --brand-light: #F7FAFC;
-            --border-color: #E2E8F0;
-            --text-main: #2D3748;
-            --bg-color: #E2E8F0;
-        }
-        
+        :root { --brand-blue: #1A365D; --brand-light: #F7FAFC; --border-color: #E2E8F0; --text-main: #2D3748; --bg-color: #E2E8F0; }
         * { box-sizing: border-box; }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            display: flex; 
-            justify-content: center; 
-            padding: 20px; 
-            margin: 0; 
-        }
-        
-        .container { 
-            background-color: var(--bg-color); 
-            width: 100%; 
-            max-width: 800px; 
-            position: relative;
-        }
-
-        .header-banner {
-            background-color: var(--brand-blue);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .header-banner img.logo { height: 45px; object-fit: contain; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { background-color: var(--bg-color); width: 100%; max-width: 800px; position: relative; }
+        .header-banner { background-color: var(--brand-blue); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; }
+        .header-banner img.logo { height: 45px; }
         .header-text { text-align: right; }
-        .header-text h1 { margin: 0; font-size: 22px; letter-spacing: 1px; }
-        .header-text p { margin: 2px 0 0 0; font-size: 12px; opacity: 0.8; }
-
-        /* Search Bar - Hidden on Print */
-        .search-card { 
-            background: #2D3748; 
-            color: white; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 15px; 
-            display: flex; 
-            gap: 10px; 
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+        .header-text h1 { margin: 0; font-size: 22px; }
+        
+        .search-card { background: #2D3748; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .search-card input { flex: 1; background: white; color: black; padding: 10px; border-radius: 4px; border: none; }
         .search-card button { background: #4A5568; padding: 10px 20px; border-radius: 6px; color: white; border: none; cursor: pointer; font-weight: bold; }
 
-        .card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px 25px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-        }
-
-        .card-title {
-            font-size: 14px; 
-            color: var(--brand-blue); 
-            border-bottom: 1.5px solid var(--border-color);
-            padding-bottom: 8px; 
-            margin-bottom: 15px; 
-            margin-top: 0; 
-            text-transform: uppercase; 
-            font-weight: bold;
-        }
-
+        .card { background-color: #fff; border-radius: 8px; padding: 20px 25px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .card-title { font-size: 14px; color: var(--brand-blue); border-bottom: 1.5px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 10px; }
+        
+        .lookup-group { display: flex; gap: 5px; }
+        .lookup-btn { background: var(--brand-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+
         .dynamic-row { display: grid; grid-template-columns: 1fr 1fr 35px; gap: 20px; margin-bottom: 8px; align-items: end; }
-        
-        .action-btn { 
-            width: 30px; height: 30px; border-radius: 4px; border: none; cursor: pointer; 
-            font-weight: bold; font-size: 16px; color: white; display: flex; align-items: center; justify-content: center;
-        }
-        .add-btn { background-color: var(--brand-blue); }
-        .remove-btn { background-color: #E53E3E; }
-        
+        .action-btn { width: 30px; height: 30px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; }
         label { display: block; font-weight: bold; margin-bottom: 4px; color: #4A5568; font-size: 11px; text-transform: uppercase; }
-        input, textarea, select { 
-            width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; 
-            box-sizing: border-box; font-size: 14px; font-family: inherit; background-color: var(--brand-light);
-        }
-
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background-color: var(--brand-light); }
         .total-box { background-color: var(--brand-light); padding: 15px 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;}
-        .total-line { margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; color: #4A5568;}
-        .grand-total { 
-            font-size: 22px; font-weight: bold; color: var(--brand-blue); margin-top: 10px; 
-            border-top: 2px solid var(--border-color); padding-top: 10px; display: flex; justify-content: space-between;
-        }
-
+        .grand-total { font-size: 22px; font-weight: bold; color: var(--brand-blue); border-top: 2px solid var(--border-color); padding-top: 10px; display: flex; justify-content: space-between; }
         .btn-group { display: flex; gap: 10px; margin: 20px 0; }
-        button.action-trigger { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; transition: opacity 0.2s; }
-
+        button.action-trigger { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; }
         .footer-terms { font-size: 11px; color: #718096; padding: 5px 0; margin-top: 15px;}
         .signature-line { display: flex; align-items: flex-end; font-weight: bold; font-size: 13px; color: var(--text-main); margin-top: 25px;}
         .signature-line span { flex: 1; border-bottom: 1px solid #A0AEC0; margin-left: 10px; height: 18px; }
-        
-        .business-footer { 
-            margin-top: 20px; text-align: center; font-style: italic; color: var(--text-main); line-height: 1.4;
-        }
-        .business-footer p { margin: 1px 0; font-size: 12px; }
+        .business-footer { margin-top: 20px; text-align: center; font-style: italic; color: var(--text-main); font-size: 12px; line-height: 1.4; }
 
-        /* --- STABILIZED PRINT OPTIMIZATION --- */
         @media print {
             @page { size: letter; margin: 0.25in; }
-            body { background: white !important; padding: 0 !important; margin: 0 !important; }
-            .container { max-width: 100% !important; width: 100% !important; background: white !important; font-size: 13px; zoom: 0.85; }
-            
-            /* The DBS Watermark */
-            body::after {
-                content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
-                font-size: 180px; font-weight: 900; color: rgba(0, 0, 0, 0.05) !important; z-index: 9999; pointer-events: none; text-transform: uppercase;
-            }
-
-            /* Hide everything that isn't the quote */
-            .btn-group, .action-btn, .search-card, .hide-for-print, .remove-btn, .add-btn { display: none !important; }
-            
-            .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px 18px !important; margin-bottom: 6px !important; page-break-inside: avoid; background: transparent !important; }
-            .header-banner { padding: 12px 25px !important; margin-bottom: 12px !important; border: 1px solid #bbb; background: #f4f4f4 !important; color: black !important;}
-            .header-text h1 { color: black !important; font-size: 24px !important; }
-            input, textarea, select { border: none !important; background: transparent !important; font-size: 14px !important; font-weight: 600; color: black !important; }
-            .total-box { padding: 12px 20px !important; border: 2px solid #000 !important; margin-top: 8px !important; }
-            .grand-total { font-size: 22px !important; color: black !important; border-top: 2px solid #000 !important; }
+            .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn { display: none !important; }
+            .container { max-width: 100% !important; width: 100% !important; background: white !important; zoom: 0.85; }
+            body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05); z-index: 9999; pointer-events: none; }
+            .card { border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 6px !important; page-break-inside: avoid; }
+            input, textarea, select { border: none !important; background: transparent !important; font-weight: 600; }
+            .total-box { border: 2px solid #000 !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-ui">
+<div class="container">
     <div class="header-banner">
         <img src="dbs-logo.png" alt="DBS" class="logo">
         <div class="header-text">
@@ -154,14 +61,20 @@
     </div>
 
     <div class="search-card">
-        <input type="text" id="searchPO" placeholder="Enter PO Number to load/revise existing quote...">
-        <button onclick="loadQuote()">🔍 Load Quote</button>
+        <input type="text" id="searchPO" placeholder="Load Existing PO to Requote/Overwrite...">
+        <button onclick="universalSearch('po')">🔍 Load PO</button>
     </div>
 
     <div class="card">
         <h2 class="card-title">Customer & Order Details</h2>
         <div class="grid-2">
-            <div><label>Customer Name</label><input type="text" id="custName"></div>
+            <div>
+                <label>Customer Name</label>
+                <div class="lookup-group">
+                    <input type="text" id="custName" placeholder="Enter name...">
+                    <button class="lookup-btn" onclick="universalSearch('customer')">🔍 Lookup</button>
+                </div>
+            </div>
             <div><label>Customer Account #</label><input type="text" id="custAcc"></div>
         </div>
         <div class="grid-2">
@@ -172,11 +85,7 @@
             <div><label>Quoted By</label><input type="text" id="quotedBy"></div>
             <div>
                 <label>Ship Method</label>
-                <select id="shipMethod">
-                    <option value="DBS">DBS</option>
-                    <option value="WC">WC</option>
-                    <option value="LTL">LTL</option>
-                </select>
+                <select id="shipMethod"><option value="DBS">DBS</option><option value="WC">WC</option><option value="LTL">LTL</option></select>
             </div>
         </div>
         <div class="grid-2">
@@ -191,14 +100,14 @@
             <div class="dynamic-row">
                 <div><label>Cabinet Material Name</label><input type="text" class="cabName"></div>
                 <div><label>Number of Cabinets</label><input type="number" class="cabCount" value="0" oninput="runMath()"></div>
-                <button class="action-btn add-btn" onclick="addRow('cabContainer')">+</button>
+                <button class="action-btn" style="background:var(--brand-blue)" onclick="addRow('cabContainer')">+</button>
             </div>
         </div>
         <div id="doorContainer" style="margin-top: 10px;">
             <div class="dynamic-row">
                 <div><label>Door Type / Material</label><input type="text" class="doorName"></div>
                 <div><label>Door Sq Ft</label><input type="number" class="doorSqFt" value="0" oninput="runMath()"></div>
-                <button class="action-btn add-btn" onclick="addRow('doorContainer')">+</button>
+                <button class="action-btn" style="background:var(--brand-blue)" onclick="addRow('doorContainer')">+</button>
             </div>
         </div>
     </div>
@@ -231,164 +140,107 @@
     </div>
 
     <div class="total-box">
-        <div class="total-line"><span>Subtotal:</span> <span id="outSubtotal">$0.00</span></div>
-        <div class="total-line"><span>Shipping:</span> <span id="outShip">$0.00</span></div>
-        <div class="total-line" id="taxRow"><span>Tax:</span> <span id="outTax">$0.00</span></div>
+        <div class="total-line" style="display:flex; justify-content:space-between"><span>Subtotal:</span> <span id="outSubtotal">$0.00</span></div>
+        <div class="total-line" style="display:flex; justify-content:space-between"><span>Shipping:</span> <span id="outShip">$0.00</span></div>
+        <div class="total-line" id="taxRow" style="display:none; justify-content:space-between"><span>Tax:</span> <span id="outTax">$0.00</span></div>
         <div class="grand-total"><span>Total:</span> <span id="outTotal">$0.00</span></div>
     </div>
 
-    <div class="footer-terms">
-        <p>This bid is only active for 30 days. Prices are subject to change without notice.</p>
-        <div class="signature-line">Please Sign Here: <span></span></div>
-        <div class="business-footer">
-            <p>Style * Beauty * Craftmanship</p>
-            <p>Toll Free 800.422.9881 * Telephone 714.744.0650</p>
-            <p>1482 N. Batavia Street, Orange, CA 92867</p>
-            <p>rtacabinets@dbsdrawers.com</p>
+    <div id="customer-footer">
+        <div class="footer-terms">
+            <p>This bid is only active for 30 days. Prices are subject to change without notice.</p>
+            <div class="signature-line">Please Sign Here: <span></span></div>
+            <div class="business-footer">
+                <p>Style * Beauty * Craftmanship</p>
+                <p>Toll Free 800.422.9881 * Telephone 714.744.0650</p>
+                <p>1482 N. Batavia Street, Orange, CA 92867 * rtacabinets@dbsdrawers.com</p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const scriptURL = 'PASTE_YOUR_URL_HERE';
-
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyV9yTxhwEkQAMzwi9Bj0ETiPJjI7pNFElSp4aG8ogw1DgL4DJFMGb85PderHyRcVPDSg/exec';
     document.getElementById('quoteDate').valueAsDate = new Date();
 
-    // PATH C: LOAD QUOTE FROM SHEET
-    async function loadQuote() {
-        const po = document.getElementById('searchPO').value;
-        if (!po) return alert("Please enter a PO Number.");
-        
-        const btn = event.target;
-        btn.innerText = "⌛ Finding...";
-        
+    async function universalSearch(type) {
+        let param = (type === 'po') ? `po=${document.getElementById('searchPO').value}` : `customer=${document.getElementById('custName').value}`;
+        if (!document.getElementById('searchPO').value && type === 'po') return alert("Enter PO.");
+        if (!document.getElementById('custName').value && type === 'customer') return alert("Enter Name.");
+
         try {
-            const response = await fetch(`${scriptURL}?po=${po}`);
+            const response = await fetch(`${scriptURL}?${param}`);
             const result = await response.json();
-            
             if (result.status === "found") {
                 const d = result.data;
                 document.getElementById('custName').value = d[1];
                 document.getElementById('custAcc').value = d[2];
-                document.getElementById('poNum').value = d[3];
-                if(d[4]) document.getElementById('quoteDate').value = new Date(d[4]).toISOString().split('T')[0];
-                document.getElementById('quotedBy').value = d[5];
-                document.getElementById('shipMethod').value = d[6];
+                if (type === 'po') {
+                    document.getElementById('poNum').value = d[3];
+                    if(d[4]) document.getElementById('quoteDate').value = new Date(d[4]).toISOString().split('T')[0];
+                    document.getElementById('quotedBy').value = d[5];
+                    document.getElementById('shipMethod').value = d[6];
+                }
                 document.getElementById('shipAddr').value = d[7];
                 document.getElementById('billAddr').value = d[8];
-                document.getElementById('matCost').value = d[11];
-                document.getElementById('margPct').value = d[12];
-                document.getElementById('doorCost').value = d[13];
-                document.getElementById('ship').value = d[14];
-                document.getElementById('sheets').value = d[15];
-                document.getElementById('labor').value = d[16];
-                document.getElementById('taxRate').value = d[17];
-                document.getElementById('discount').value = d[21] || 0;
-                
-                runMath();
-                alert("Quote Loaded Successfully.");
-            } else {
-                alert("PO Number not found in Sheet.");
-            }
-        } catch (e) { alert("Error connecting to Google Sheets."); }
-        btn.innerText = "🔍 Load Quote";
+                if (type === 'po') {
+                    document.getElementById('matCost').value = d[11];
+                    document.getElementById('margPct').value = d[12];
+                    document.getElementById('doorCost').value = d[13];
+                    document.getElementById('ship').value = d[14];
+                    document.getElementById('sheets').value = d[15];
+                    document.getElementById('labor').value = d[16];
+                    document.getElementById('taxRate').value = d[17];
+                    document.getElementById('discount').value = d[21] || 0;
+                    runMath();
+                }
+                alert(type === 'po' ? "Quote Loaded." : "Customer Info Found.");
+            } else { alert("Not found."); }
+        } catch (e) { alert("Search error."); }
     }
 
-    // PATH B: SYNC/OVERWRITE TO SHEET
     async function saveToSheets() {
         const btn = document.getElementById('saveBtn');
         const po = document.getElementById('poNum').value;
-        if (!po) return alert("PO Number is required.");
-        
+        if (!po) return alert("PO Number required.");
         btn.disabled = true; btn.innerText = "Syncing...";
-
         let cabs = ""; document.querySelectorAll('#cabContainer .dynamic-row').forEach(r => cabs += r.querySelector('.cabName').value + "(" + r.querySelector('.cabCount').value + "); ");
         let doors = ""; document.querySelectorAll('#doorContainer .dynamic-row').forEach(r => doors += r.querySelector('.doorName').value + "(" + r.querySelector('.doorSqFt').value + "sqft); ");
-
-        const allData = {
-            Customer: document.getElementById('custName').value,
-            Account: document.getElementById('custAcc').value,
-            PO: po, Date: document.getElementById('quoteDate').value,
-            By: document.getElementById('quotedBy').value,
-            ShipMethod: document.getElementById('shipMethod').value,
-            ShipAddr: document.getElementById('shipAddr').value,
-            BillAddr: document.getElementById('billAddr').value,
-            Cabinets: cabs, Doors: doors,
-            MatCost: document.getElementById('matCost').value,
-            Margin: document.getElementById('margPct').value,
-            DoorCost: document.getElementById('doorCost').value,
-            Shipping: document.getElementById('ship').value,
-            Sheets: document.getElementById('sheets').value,
-            Labor: document.getElementById('labor').value,
-            TaxRate: document.getElementById('taxRate').value,
-            Discount: document.getElementById('discount').value,
-            Subtotal: document.getElementById('outSubtotal').innerText,
-            TaxAmount: document.getElementById('outTax').innerText,
-            GrandTotal: document.getElementById('outTotal').innerText
-        };
-
-        try {
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) });
-            btn.innerText = "✅ Synced Successfully";
-            btn.style.backgroundColor = "#48BB78";
-        } catch (e) { alert("Error saving data."); }
-        setTimeout(() => { 
-            btn.disabled = false; 
-            btn.innerText = "💾 Sync/Save to Sheets"; 
-            btn.style.backgroundColor = "#3182CE"; 
-        }, 2500);
+        const allData = { Customer: document.getElementById('custName').value, Account: document.getElementById('custAcc').value, PO: po, Date: document.getElementById('quoteDate').value, By: document.getElementById('quotedBy').value, ShipMethod: document.getElementById('shipMethod').value, ShipAddr: document.getElementById('shipAddr').value, BillAddr: document.getElementById('billAddr').value, Cabinets: cabs, Doors: doors, MatCost: document.getElementById('matCost').value, Margin: document.getElementById('margPct').value, DoorCost: document.getElementById('doorCost').value, Shipping: document.getElementById('ship').value, Sheets: document.getElementById('sheets').value, Labor: document.getElementById('labor').value, TaxRate: document.getElementById('taxRate').value, Discount: document.getElementById('discount').value, Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, GrandTotal: document.getElementById('outTotal').innerText };
+        try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) }); btn.innerText = "✅ Synced"; btn.style.backgroundColor = "#48BB78"; }
+        catch (e) { alert("Error."); }
+        setTimeout(() => { btn.disabled = false; btn.innerText = "💾 Sync/Save to Sheets"; btn.style.backgroundColor = "#3182CE"; }, 2500);
     }
 
     function addRow(id) {
         const div = document.createElement('div'); div.className = 'dynamic-row';
         div.innerHTML = `<div><input type="text" class="${id==='cabContainer'?'cabName':'doorName'}"></div>
                          <div><input type="number" class="${id==='cabContainer'?'cabCount':'doorSqFt'}" value="0" oninput="runMath()"></div>
-                         <button class="action-btn remove-btn" onclick="this.parentElement.remove(); runMath()">×</button>`;
+                         <button class="action-btn" style="background:#E53E3E" onclick="this.parentElement.remove(); runMath()">×</button>`;
         document.getElementById(id).appendChild(div);
     }
 
     function runMath() {
         let sqft = 0; document.querySelectorAll('.doorSqFt').forEach(el => sqft += parseFloat(el.value) || 0);
-        const mCost = parseFloat(document.getElementById('matCost').value) || 0;
-        const mPct = parseFloat(document.getElementById('margPct').value) || 0;
-        const dCost = parseFloat(document.getElementById('doorCost').value) || 0;
-        const shp = parseFloat(document.getElementById('ship').value) || 0;
+        const mCost = parseFloat(document.getElementById('matCost').value) || 0, mPct = parseFloat(document.getElementById('margPct').value) || 0;
+        const dCost = parseFloat(document.getElementById('doorCost').value) || 0, shp = parseFloat(document.getElementById('ship').value) || 0;
         const labor = (parseFloat(document.getElementById('sheets').value) || 0) * (parseFloat(document.getElementById('labor').value) || 0);
-        const tRate = parseFloat(document.getElementById('taxRate').value) || 0;
-        const disc = parseFloat(document.getElementById('discount').value) || 0;
-        
+        const tRate = parseFloat(document.getElementById('taxRate').value) || 0, disc = parseFloat(document.getElementById('discount').value) || 0;
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
         const sub = (matTotal + (sqft * dCost) + labor) - disc;
-        
-        // Correct Tax Calculation (Subtotal Only)
         const tax = sub * (tRate / 100);
-        const total = sub + tax + shp;
-
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
-        document.getElementById('outTotal').innerText = '$' + total.toLocaleString(undefined,{minimumFractionDigits:2});
-        
+        document.getElementById('outTotal').innerText = '$' + (sub + tax + shp).toLocaleString(undefined,{minimumFractionDigits:2});
         document.getElementById('taxRow').style.display = tax <= 0 ? "none" : "flex";
     }
 
     function doPrint(type) {
-        const pricing = document.getElementById('pricingSection');
-        const title = document.getElementById('print-title');
-        
-        if (type === 'customer') {
-            pricing.classList.add('hide-for-print');
-            title.innerText = "RTA Cabinet Quote";
-        } else {
-            pricing.classList.remove('hide-for-print');
-            title.innerText = "RTA INTERNAL QUOTE";
-        }
-        
-        window.print();
-        
-        // Reset view after print
-        pricing.classList.remove('hide-for-print');
-        title.innerText = "RTA CABINET QUOTE";
+        const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), footer = document.getElementById('customer-footer');
+        if (type === 'customer') { pricing.classList.add('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA Cabinet Quote"; } 
+        else { pricing.classList.remove('hide-for-print'); footer.classList.add('hide-for-print'); title.innerText = "RTA INTERNAL QUOTE"; }
+        window.print(); pricing.classList.remove('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA CABINET QUOTE";
     }
 </script>
 </body>
