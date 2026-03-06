@@ -47,7 +47,6 @@
         button.action-trigger { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; }
         .footer-terms { font-size: 11px; color: #718096; margin-top: 15px;}
         
-        /* Signature Line Setup */
         .signature-section { margin-top: 30px; display: flex; align-items: baseline; }
         .sign-here-label { font-weight: bold; font-size: 13px; color: var(--text-main); white-space: nowrap; }
         .sign-line { flex-grow: 1; border-bottom: 1px solid #2D3748; margin-left: 10px; }
@@ -66,8 +65,10 @@
             input, textarea, select { border: none !important; background: transparent !important; color: black !important; font-weight: 600; padding: 2px 0 !important; }
             .total-box { border: 2px solid #000 !important; padding: 12px 20px !important; }
             .grand-total { border-top: 2px solid #000 !important; color: black !important; }
-            /* Force plain text for contact info (remove blue link color) */
             .business-footer p { color: black !important; text-decoration: none !important; }
+            /* Explicitly show tax row if it has content during print */
+            #taxRow { display: flex !important; }
+            #taxRow:empty { display: none !important; }
         }
     </style>
 </head>
@@ -174,7 +175,7 @@
     <div class="total-box">
         <div class="total-line"><span>Subtotal:</span> <span id="outSubtotal">$0.00</span></div>
         <div class="total-line"><span>Shipping:</span> <span id="outShip">$0.00</span></div>
-        <div class="total-line" id="taxRow" style="display:none;"><span>Tax:</span> <span id="outTax">$0.00</span></div>
+        <div class="total-line" id="taxRow"><span>Tax:</span> <span id="outTax">$0.00</span></div>
         <div class="grand-total"><span>Total:</span> <span id="outTotal">$0.00</span></div>
     </div>
 
@@ -269,11 +270,14 @@
         const matTotal = (mCost > 0 && mPct < 100) ? mCost / (1 - (mPct / 100)) : mCost;
         const sub = (matTotal + (sqft * dCost) + labor) - disc;
         const tax = sub * (tRate / 100);
+        
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
         document.getElementById('outTotal').innerText = '$' + (sub + tax + shp).toLocaleString(undefined,{minimumFractionDigits:2});
-        document.getElementById('taxRow').style.display = tax <= 0 ? "none" : "flex";
+        
+        // Hide row if tax is zero, otherwise show it
+        document.getElementById('taxRow').style.display = (tax > 0) ? "flex" : "none";
     }
 
     async function saveToSheets() {
@@ -297,10 +301,34 @@
     }
 
     function doPrint(type) {
-        const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), footer = document.getElementById('customer-footer');
-        if (type === 'customer') { pricing.classList.add('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA CABINET QUOTE"; } 
-        else { pricing.classList.remove('hide-for-print'); footer.classList.add('hide-for-print'); title.innerText = "RTA INTERNAL QUOTE"; }
-        window.print(); pricing.classList.remove('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA CABINET QUOTE";
+        const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), footer = document.getElementById('customer-footer'), taxRow = document.getElementById('taxRow');
+        
+        const hasTax = parseFloat(document.getElementById('outTax').innerText.replace('$', '')) > 0;
+
+        if (type === 'customer') { 
+            pricing.classList.add('hide-for-print'); 
+            footer.classList.remove('hide-for-print'); 
+            title.innerText = "RTA Cabinet Quote"; 
+        } else { 
+            pricing.classList.remove('hide-for-print'); 
+            footer.classList.add('hide-for-print'); 
+            title.innerText = "RTA INTERNAL QUOTE"; 
+        }
+
+        // FORCE tax visibility logic specifically for print
+        if (hasTax) {
+            taxRow.style.setProperty('display', 'flex', 'important');
+        } else {
+            taxRow.style.setProperty('display', 'none', 'important');
+        }
+
+        window.print(); 
+
+        // Reset view back to default
+        pricing.classList.remove('hide-for-print'); 
+        footer.classList.remove('hide-for-print'); 
+        title.innerText = "RTA CABINET QUOTE";
+        taxRow.style.display = hasTax ? "flex" : "none";
     }
 </script>
 </body>
