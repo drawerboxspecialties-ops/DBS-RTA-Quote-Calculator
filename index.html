@@ -1,9 +1,10 @@
 function doGet(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  // FIXED: Changed how it finds the sheet to be more reliable for Web Apps
   const sheet = ss.getSheets()[0]; 
   const data = sheet.getDataRange().getValues();
   
-  // 1. PO SEARCH (Partial Match + Selection List)
+  // 1. PO SEARCH (Now supports Partial Match Selection)
   if (e.parameter.po) {
     const searchTarget = e.parameter.po.toString().toLowerCase();
     let matches = [];
@@ -22,7 +23,7 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // 2. CUSTOMER SEARCH (Fix for Error)
+  // 2. CUSTOMER SEARCH
   if (e.parameter.customer) {
     const nameToFind = e.parameter.customer.toLowerCase();
     let matches = [];
@@ -39,7 +40,7 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // 3. MATERIAL DROPDOWNS
+  // 3. MATERIAL DROPDOWN SEARCH
   if (e.parameter.getMaterials) {
     let cabs = new Set(), doors = new Set();
     for (let i = 1; i < data.length; i++) {
@@ -48,6 +49,7 @@ function doGet(e) {
     }
     return ContentService.createTextOutput(JSON.stringify({cabs: Array.from(cabs), doors: Array.from(doors)})).setMimeType(ContentService.MimeType.JSON);
   }
+
   return ContentService.createTextOutput(JSON.stringify({status: "not_found"})).setMimeType(ContentService.MimeType.JSON);
 }
 
