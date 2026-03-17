@@ -53,6 +53,7 @@
 
         .business-footer { margin-top: 20px; text-align: center; font-style: italic; font-size: 12px; line-height: 1.4; color: var(--text-main); }
 
+        /* --- STABILIZED PRINT STYLES --- */
         @media print {
             @page { size: letter; margin: 0.25in; }
             body { background: white !important; padding: 0 !important; margin: 0 !important; }
@@ -65,10 +66,18 @@
             .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px 18px !important; margin-bottom: 6px !important; page-break-inside: avoid; background: transparent !important; }
             .header-banner { padding: 12px 25px !important; margin-bottom: 12px !important; border: 1px solid #bbb; background: #f4f4f4 !important; color: black !important;}
             .header-text h1 { color: black !important; font-size: 24px !important; }
-            input, textarea, select { border: none !important; background: transparent !important; color: black !important; font-weight: 600; padding: 2px 0 !important; }
+            
+            /* Ensure inputs show values in print engine */
+            input, textarea, select { 
+                border: none !important; background: transparent !important; color: black !important; font-weight: 600 !important; padding: 2px 0 !important;
+                appearance: none !important; -webkit-appearance: none !important;
+            }
+
             .total-box { border: 2px solid #000 !important; padding: 12px 20px !important; }
             .grand-total { border-top: 2px solid #000 !important; color: black !important; }
             #taxRow { display: flex !important; }
+
+            /* Pins business info to the bottom */
             .business-footer { margin-top: auto !important; padding-top: 20px; }
         }
     </style>
@@ -228,8 +237,15 @@
         if (check.checked) { document.getElementById('shipAddr').value = document.getElementById('billAddr').value; }
     }
 
+    /* REVISED NEW QUOTE FUNCTION */
     function resetQuoteForm() {
-        window.location.href = "https://drawerboxspecialties-ops.github.io/DBS-RTA-Quote-Calculator/";
+        document.getElementById("quoteForm").reset();
+        document.getElementById('quoteDate').valueAsDate = new Date();
+        document.getElementById('searchPO').value = "";
+        document.querySelectorAll('#cabContainer .dynamic-row:not(:first-child)').forEach(el => el.remove());
+        document.querySelectorAll('#doorContainer .dynamic-row:not(:first-child)').forEach(el => el.remove());
+        runMath();
+        alert("Form cleared.");
     }
 
     async function universalSearch(type) {
@@ -335,17 +351,25 @@
         document.getElementById(id).appendChild(div);
     }
 
+    /* THE PRINT ENGINE */
     function doPrint(type) {
         const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), 
               footerInfo = document.getElementById('print-business-info'), footerTerms = document.getElementById('print-terms');
+        
         document.querySelectorAll('input, textarea').forEach(el => { el.setAttribute('value', el.value); });
+
         document.querySelectorAll('.dynamic-row').forEach(row => {
             const name = row.querySelector('input[type="text"]').value;
             if (!name || name.trim() === "") { row.style.setProperty('display', 'none', 'important'); } 
             else { row.style.setProperty('display', 'grid', 'important'); }
         });
-        if (type === 'customer') { pricing.classList.add('hide-for-print'); footerInfo.classList.remove('hide-for-print'); footerTerms.classList.remove('hide-for-print'); title.innerText = "RTA Cabinet Quote"; } 
-        else { pricing.classList.remove('hide-for-print'); footerInfo.classList.add('hide-for-print'); footerTerms.classList.add('hide-for-print'); title.innerText = "RTA INTERNAL QUOTE"; }
+
+        if (type === 'customer') { 
+            pricing.classList.add('hide-for-print'); footerInfo.classList.remove('hide-for-print'); footerTerms.classList.remove('hide-for-print'); title.innerText = "RTA Cabinet Quote"; 
+        } else { 
+            pricing.classList.remove('hide-for-print'); footerInfo.classList.add('hide-for-print'); footerTerms.classList.add('hide-for-print'); title.innerText = "RTA INTERNAL QUOTE"; 
+        }
+
         window.print(); 
         pricing.classList.remove('hide-for-print'); footerInfo.classList.remove('hide-for-print'); footerTerms.classList.remove('hide-for-print'); title.innerText = "RTA CABINET QUOTE";
         document.querySelectorAll('.dynamic-row').forEach(row => row.style.display = "");
