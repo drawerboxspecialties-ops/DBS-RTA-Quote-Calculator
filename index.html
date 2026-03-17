@@ -56,7 +56,10 @@
         @media print {
             @page { size: letter; margin: 0.25in; }
             body { background: white !important; padding: 0 !important; margin: 0 !important; }
-            .container { max-width: 100% !important; width: 100% !important; background: white !important; zoom: 0.85; display: flex; flex-direction: column; min-height: 10.5in; }
+            .container { 
+                max-width: 100% !important; width: 100% !important; background: white !important; zoom: 0.85; 
+                display: flex; flex-direction: column; min-height: 10.5in;
+            }
             body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05) !important; z-index: 9999; pointer-events: none; }
             .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
             .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px 18px !important; margin-bottom: 6px !important; page-break-inside: avoid; background: transparent !important; }
@@ -75,7 +78,7 @@
 <div id="modalOverlay">
     <div class="modal-content">
         <div style="display:flex; justify-content:space-between; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:15px; font-weight:bold;">
-            <span id="modalTitle">Select Previous Item</span>
+            <span id="modalTitle">Select Item</span>
             <span onclick="closeModal()" style="cursor:pointer; font-size:20px;">&times;</span>
         </div>
         <div id="customerList"></div>
@@ -176,7 +179,7 @@
         </div>
         <div class="grid-2">
             <div><label>Local Tax Rate (%)</label><input type="number" id="taxRate" placeholder="" oninput="runMath()"></div>
-            <div><label>Discount / Adjustment ($)</label><input type="number" id="discount" placeholder="" oninput="runMath()" style="color:red; font-weight:bold;"></div>
+            <div><label>Discount ($)</label><input type="number" id="discount" placeholder="" oninput="runMath()" style="color:red; font-weight:bold;"></div>
         </div>
     </div>
     </form>
@@ -210,7 +213,7 @@
 </div>
 
 <script>
-    const scriptURL = 'PASTE_YOUR_NEW_URL_HERE';
+    const scriptURL = 'PASTE_YOUR_URL_HERE';
     document.getElementById('quoteDate').valueAsDate = new Date();
 
     function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
@@ -235,9 +238,8 @@
         try {
             const response = await fetch(`${scriptURL}?${type}=${val}`);
             const result = await response.json();
-            if (result.status === "list") {
-                showSelectionList(result.data, type);
-            } else { alert("Not found."); }
+            if (result.status === "list") { showSelectionList(result.data, type); } 
+            else { alert("Not found."); }
         } catch (e) { alert("Search Error."); }
     }
 
@@ -246,7 +248,6 @@
         const title = document.getElementById('modalTitle');
         list.innerHTML = "";
         title.innerText = (type === 'po') ? "Select Matching Quote" : "Select Previous Customer";
-        
         matches.forEach(m => {
             const div = document.createElement('div');
             div.className = 'cust-item';
@@ -319,8 +320,10 @@
         const formData = new URLSearchParams();
         const allData = { Customer: document.getElementById('custName').value, Account: document.getElementById('custAcc').value, PO: po, Date: document.getElementById('quoteDate').value, By: document.getElementById('quotedBy').value, ShipMethod: document.getElementById('shipMethod').value, ShipAddr: document.getElementById('shipAddr').value, BillAddr: document.getElementById('billAddr').value, Cabinets: cabs, Doors: doors, MatCost: document.getElementById('matCost').value, Margin: document.getElementById('margPct').value, DoorCost: document.getElementById('doorCost').value, Shipping: document.getElementById('ship').value, Sheets: document.getElementById('sheets').value, Labor: document.getElementById('labor').value, TaxRate: document.getElementById('taxRate').value, Discount: document.getElementById('discount').value, Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, GrandTotal: document.getElementById('outTotal').innerText };
         for (const key in allData) { formData.append(key, allData[key]); }
-        try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData }); btn.innerText = "✅ Synced"; btn.style.backgroundColor = "#48BB78"; }
-        catch (e) { alert("Save error."); }
+        try {
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData });
+            btn.innerText = "✅ Synced"; btn.style.backgroundColor = "#48BB78";
+        } catch (e) { alert("Save error."); }
         setTimeout(() => { btn.disabled = false; btn.innerText = "💾 Sync/Save to Sheets"; btn.style.backgroundColor = "#3182CE"; }, 2500);
     }
 
