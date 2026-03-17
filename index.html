@@ -63,7 +63,7 @@
                 zoom: 0.85; 
                 display: flex;
                 flex-direction: column;
-                min-height: 10.3in;
+                min-height: 10.4in; /* Ensures footer pins to bottom of page */
             }
             body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05) !important; z-index: 9999; pointer-events: none; }
             .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
@@ -78,14 +78,10 @@
             #taxRow { display: flex !important; }
             #taxRow:empty { display: none !important; }
 
-            #customer-footer { margin-top: auto; padding-top: 20px; }
-            
-            /* Logic to hide empty spec rows during print */
-            .dynamic-row:has(input[value=""]), 
-            .dynamic-row:has(input[value="0"]),
-            .dynamic-row:not(:has(.cabName:not([value=""]))),
-            .dynamic-row:not(:has(.doorName:not([value=""]))) {
-                display: none !important;
+            /* Pin only the address/logo info to the bottom */
+            .business-footer {
+                margin-top: auto !important;
+                padding-top: 20px;
             }
         }
     </style>
@@ -221,19 +217,19 @@
         <div class="grand-total"><span>Total:</span> <span id="outTotal">$0.00</span></div>
     </div>
 
-    <div id="customer-footer">
-        <div class="footer-terms">
+    <div id="customer-footer-container">
+        <div class="footer-terms" id="print-terms">
             <p>This bid is only active for 30 days. Prices are subject to change without notice.</p>
-            <div class="signature-section">
+            <div class="signature-section" id="print-sig">
                 <span class="sign-here-label">Customer Signature:</span>
                 <div class="sign-line"></div>
             </div>
-            <div class="business-footer">
-                <p>Style * Beauty * Craftmanship</p>
-                <p>Toll Free 800.422.9881 * Telephone 714.744.0650</p>
-                <p>1482 N. Batavia Street, Orange, CA 92867</p>
-                <p>rtacabinets@dbsdrawers.com</p>
-            </div>
+        </div>
+        <div class="business-footer" id="print-business-info">
+            <p>Style * Beauty * Craftmanship</p>
+            <p>Toll Free 800.422.9881 * Telephone 714.744.0650</p>
+            <p>1482 N. Batavia Street, Orange, CA 92867</p>
+            <p>rtacabinets@dbsdrawers.com</p>
         </div>
     </div>
 </div>
@@ -327,6 +323,7 @@
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
+        // Corrects 3-decimal issue and ensures 2 decimals strictly
         document.getElementById('outTotal').innerText = '$' + (sub + tax + shp).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
         
         document.getElementById('taxRow').style.display = (tax > 0) ? "flex" : "none";
@@ -368,17 +365,48 @@
     }
 
     function doPrint(type) {
-        const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), footer = document.getElementById('customer-footer'), taxRow = document.getElementById('taxRow');
+        const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), 
+              footerInfo = document.getElementById('print-business-info'), footerTerms = document.getElementById('print-terms'),
+              taxRow = document.getElementById('taxRow');
+        
         const hasTax = parseFloat(document.getElementById('outTax').innerText.replace('$', '')) > 0;
-        if (type === 'customer') { pricing.classList.add('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA Cabinet Quote"; } 
-        else { pricing.classList.remove('hide-for-print'); footer.classList.add('hide-for-print'); title.innerText = "RTA INTERNAL QUOTE"; }
+
+        // PROGRAMMATICALLY MARK EMPTY ROWS TO HIDE THEM IN PRINT
+        document.querySelectorAll('.dynamic-row').forEach(row => {
+            const name = row.querySelector('input[type="text"]').value;
+            const qty = row.querySelector('input[type="number"]').value;
+            if (!name || !qty || qty == 0) {
+                row.classList.add('hide-for-print');
+            } else {
+                row.classList.remove('hide-for-print');
+            }
+        });
+
+        if (type === 'customer') { 
+            pricing.classList.add('hide-for-print'); 
+            footerInfo.classList.remove('hide-for-print');
+            footerTerms.classList.remove('hide-for-print');
+            title.innerText = "RTA Cabinet Quote"; 
+        } else { 
+            pricing.classList.remove('hide-for-print'); 
+            footerInfo.classList.add('hide-for-print');
+            footerTerms.classList.add('hide-for-print');
+            title.innerText = "RTA INTERNAL QUOTE"; 
+        }
+
         if (hasTax) { taxRow.style.setProperty('display', 'flex', 'important'); } else { taxRow.style.setProperty('display', 'none', 'important'); }
+        
         window.print(); 
-        pricing.classList.remove('hide-for-print'); footer.classList.remove('hide-for-print'); title.innerText = "RTA CABINET QUOTE";
+        
+        // Reset view
+        pricing.classList.remove('hide-for-print'); 
+        footerInfo.classList.remove('hide-for-print');
+        footerTerms.classList.remove('hide-for-print');
+        title.innerText = "RTA CABINET QUOTE";
         taxRow.style.display = hasTax ? "flex" : "none";
+        document.querySelectorAll('.dynamic-row').forEach(row => row.classList.remove('hide-for-print'));
     }
 
-    // Populate material dropdowns from sheet data
     async function loadMaterialDropdowns() {
         try {
             const response = await fetch(`${scriptURL}?getMaterials=true`);
