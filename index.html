@@ -24,7 +24,6 @@
         .card { background-color: #fff; border-radius: 8px; padding: 20px 25px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
         .card-title { font-size: 14px; color: var(--brand-blue); border-bottom: 1.5px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 10px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 10px; }
         .dynamic-row { display: grid; grid-template-columns: 1fr 1fr 35px; gap: 20px; margin-bottom: 8px; align-items: end; }
         .action-btn { width: 30px; height: 30px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; }
         label { display: block; font-weight: bold; margin-bottom: 4px; color: #4A5568; font-size: 11px; text-transform: uppercase; }
@@ -44,7 +43,7 @@
             body { background: white !important; padding: 0 !important; margin: 0 !important; }
             .container { max-width: 100% !important; width: 100% !important; background: white !important; zoom: 0.85; display: flex; flex-direction: column; min-height: 10.5in; }
             body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05) !important; z-index: 9999; pointer-events: none; }
-            .btn-group, .action-btn, .search-card, .hide-for-print, #modalOverlay { display: none !important; }
+            .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
             .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px 18px !important; margin-bottom: 6px !important; page-break-inside: avoid; }
             input, textarea, select { border: none !important; background: transparent !important; color: black !important; font-weight: 600 !important; padding: 2px 0 !important; }
             .business-footer { margin-top: auto !important; padding-top: 20px; }
@@ -63,21 +62,18 @@
             <div><label>Customer Name</label><div style="display: flex; gap: 5px;"><input type="text" id="custName" placeholder="Type name..."><button type="button" onclick="universalSearch('customer')" style="background:var(--brand-blue); color:white; border:none; border-radius:4px; padding:0 10px; cursor:pointer;">🔍</button></div></div>
             <div><label>Customer Account #</label><input type="text" id="custAcc"></div>
         </div>
-        <div class="grid-3">
+        <div class="grid-2">
             <div><label>PO Number</label><input type="text" id="poNum"></div>
             <div><label>Quote Date</label><input type="date" id="quoteDate"></div>
-            <div><label>Quoted By</label><input type="text" id="quotedBy"></div>
-        </div>
-        <div class="grid-3">
-            <div><label>Quote Status</label><select id="quoteStatus"><option value="Quote Approval Pending">Quote Approval Pending</option><option value="Ordered">Ordered</option><option value="Lost">Lost</option><option value="Assembly Sheets Sent">Assembly Sheets Sent</option><option value="Assembly Sheets Approved">Assembly Sheets Approved</option><option value="Shipped">Shipped</option></select></div>
-            <div><label>Sales Order #</label><input type="text" id="salesOrder"></div>
-            <div><label>Due Date</label><input type="date" id="dueDate"></div>
         </div>
         <div class="grid-2">
+            <div><label>Quoted By</label><input type="text" id="quotedBy"></div>
             <div><label>Ship Method</label><select id="shipMethod"><option value="DBS">DBS</option><option value="WC">WC</option><option value="LTL">LTL</option></select></div>
-            <div><label>Bill To Address</label><textarea id="billAddr" rows="2" oninput="syncAddress()"></textarea></div>
         </div>
-        <div class="grid-2"><div><label>Ship To Address <input type="checkbox" id="sameAddress" onclick="syncAddress()" style="width:auto"> <span style="font-size:9px">Same as Bill</span></label><textarea id="shipAddr" rows="2"></textarea></div></div>
+        <div class="grid-2">
+            <div><label>Bill To Address</label><textarea id="billAddr" rows="2" oninput="syncAddress()"></textarea></div>
+            <div><label>Ship To Address <input type="checkbox" id="sameAddress" onclick="syncAddress()" style="width:auto"> <span style="font-size:9px">Same as Bill</span></label><textarea id="shipAddr" rows="2"></textarea></div>
+        </div>
     </div>
     <div class="card">
         <h2 class="card-title">Materials & Specifications</h2>
@@ -86,11 +82,25 @@
     </div>
     <datalist id="prevMaterials"></datalist><datalist id="prevDoors"></datalist>
     <div class="card hide-for-print" id="pricingSection">
-        <h2 class="card-title">Internal Pricing</h2>
-        <div class="grid-2"><div><label>Material Cost ($)</label><input type="number" id="matCost" oninput="runMath()"></div><div><label>Margin (%)</label><input type="number" id="margPct" value="40" oninput="runMath()"></div></div>
-        <div class="grid-2"><div><label>Door Cost / SqFt ($)</label><input type="number" id="doorCost" oninput="runMath()"></div><div><label>Shipping ($)</label><input type="number" id="ship" oninput="runMath()"></div></div>
-        <div class="grid-2"><div><label>Number of Sheets</label><input type="number" id="sheets" oninput="runMath()"></div><div><label>Labor Per Sheet ($)</label><input type="number" id="labor" oninput="runMath()"></div></div>
-        <div class="grid-2"><div><label>Tax Rate (%)</label><input type="number" id="taxRate" oninput="runMath()"></div><div><label>Discount ($)</label><input type="number" id="discount" oninput="runMath()" style="color:red; font-weight:bold;"></div></div>
+        <h2 class="card-title">Internal Tracking & Pricing</h2>
+        <div class="grid-2">
+            <div>
+                <label>Quote Status (Column W)</label>
+                <select id="quoteStatus">
+                    <option value="Quote Approval Pending">Quote Approval Pending</option>
+                    <option value="Ordered">Ordered</option>
+                    <option value="Lost">Lost</option>
+                    <option value="Assembly Sheets Sent">Assembly Sheets Sent</option>
+                    <option value="Assembly Sheets Approved">Assembly Sheets Approved</option>
+                    <option value="Shipped">Shipped</option>
+                </select>
+            </div>
+            <div><label>Material Cost ($)</label><input type="number" id="matCost" oninput="runMath()"></div>
+        </div>
+        <div class="grid-2"><div><label>Margin (%)</label><input type="number" id="margPct" value="40" oninput="runMath()"></div><div><label>Door Cost / SqFt ($)</label><input type="number" id="doorCost" oninput="runMath()"></div></div>
+        <div class="grid-2"><div><label>Shipping ($)</label><input type="number" id="ship" oninput="runMath()"></div><div><label>Number of Sheets</label><input type="number" id="sheets" oninput="runMath()"></div></div>
+        <div class="grid-2"><div><label>Labor Per Sheet ($)</label><input type="number" id="labor" oninput="runMath()"></div><div><label>Tax Rate (%)</label><input type="number" id="taxRate" oninput="runMath()"></div></div>
+        <div class="grid-2"><div><label>Discount ($)</label><input type="number" id="discount" oninput="runMath()" style="color:red; font-weight:bold;"></div><div></div></div>
     </div>
     </form>
     <div class="btn-group">
@@ -115,7 +125,7 @@
     function resetQuoteForm() { document.getElementById("quoteForm").reset(); document.getElementById('quoteDate').valueAsDate = new Date(); document.querySelectorAll('.dynamic-row:not(:first-child)').forEach(el => el.remove()); runMath(); alert("Form cleared."); }
     async function universalSearch(type) {
         let val = (type === 'po') ? document.getElementById('searchPO').value : document.getElementById('custName').value;
-        if (!val) return alert("Search required.");
+        if (!val) return alert("Search term required.");
         try {
             const response = await fetch(`${scriptURL}?${type}=${encodeURIComponent(val)}`);
             const result = await response.json();
@@ -124,7 +134,7 @@
         } catch (e) { alert("Search Error."); }
     }
     function showSelectionList(matches, type) {
-        const list = document.getElementById('customerList'); document.getElementById('modalTitle').innerText = (type === 'po') ? "Select Quote" : "Select Customer"; list.innerHTML = "";
+        const list = document.getElementById('customerList'); document.getElementById('modalTitle').innerText = (type === 'po') ? "Select Matching Quote" : "Select Previous Customer"; list.innerHTML = "";
         matches.forEach(m => {
             const div = document.createElement('div'); div.className = 'cust-item';
             div.innerHTML = (type === 'po') ? `<strong>PO: ${m.po}</strong><br><small>${m.customer}</small>` : `<strong>${m.name}</strong><br><small>Acc: ${m.account}</small>`;
@@ -138,9 +148,8 @@
         if (fullLoad) {
             document.getElementById('poNum').value = d[3]; document.getElementById('quotedBy').value = d[5]; document.getElementById('shipMethod').value = d[6]; document.getElementById('shipAddr').value = d[7]; document.getElementById('billAddr').value = d[8];
             document.getElementById('matCost').value = d[11]; document.getElementById('margPct').value = d[12]; document.getElementById('doorCost').value = d[13]; document.getElementById('ship').value = d[14]; document.getElementById('sheets').value = d[15]; document.getElementById('labor').value = d[16]; document.getElementById('taxRate').value = d[17]; document.getElementById('discount').value = d[21] || "";
-            document.getElementById('quoteStatus').value = d[22] || "Quote Approval Pending"; document.getElementById('salesOrder').value = d[23] || "";
-            if(d[24]) document.getElementById('dueDate').value = new Date(d[24]).toISOString().split('T')[0];
-            runMath();
+            document.getElementById('quoteStatus').value = d[22] || "Quote Approval Pending";
+            runMath(); alert("Quote Loaded.");
         }
     }
     function runMath() {
@@ -151,11 +160,11 @@
         document.getElementById('outTotal').innerText = '$' + (sub + tax + shp).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
     async function saveToSheets() {
-        const btn = document.getElementById('saveBtn'); const po = document.getElementById('poNum').value; if (!po) return alert("PO Required."); btn.innerText = "Syncing...";
+        const btn = document.getElementById('saveBtn'); const po = document.getElementById('poNum').value; if (!po) return alert("PO Number required."); btn.innerText = "Syncing...";
         let cabs = "", doors = "";
         document.querySelectorAll('#cabContainer .dynamic-row').forEach(r => { if(r.querySelector('.cabName').value) cabs += r.querySelector('.cabName').value + "(" + (r.querySelector('.cabCount').value || 0) + "); "; });
         document.querySelectorAll('#doorContainer .dynamic-row').forEach(r => { if(r.querySelector('.doorName').value) doors += r.querySelector('.doorName').value + "(" + (r.querySelector('.doorSqFt').value || 0) + "sqft); "; });
-        const formData = new URLSearchParams({ Customer: document.getElementById('custName').value, Account: document.getElementById('custAcc').value, PO: po, Date: document.getElementById('quoteDate').value, By: document.getElementById('quotedBy').value, ShipMethod: document.getElementById('shipMethod').value, ShipAddr: document.getElementById('shipAddr').value, BillAddr: document.getElementById('billAddr').value, Cabinets: cabs, Doors: doors, MatCost: document.getElementById('matCost').value, Margin: document.getElementById('margPct').value, DoorCost: document.getElementById('doorCost').value, Shipping: document.getElementById('ship').value, Sheets: document.getElementById('sheets').value, Labor: document.getElementById('labor').value, TaxRate: document.getElementById('taxRate').value, Discount: document.getElementById('discount').value, Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, GrandTotal: document.getElementById('outTotal').innerText, QuoteStatus: document.getElementById('quoteStatus').value, SalesOrder: document.getElementById('salesOrder').value, DueDate: document.getElementById('dueDate').value });
+        const formData = new URLSearchParams({ Customer: document.getElementById('custName').value, Account: document.getElementById('custAcc').value, PO: po, Date: document.getElementById('quoteDate').value, By: document.getElementById('quotedBy').value, ShipMethod: document.getElementById('shipMethod').value, ShipAddr: document.getElementById('shipAddr').value, BillAddr: document.getElementById('billAddr').value, Cabinets: cabs, Doors: doors, MatCost: document.getElementById('matCost').value, Margin: document.getElementById('margPct').value, DoorCost: document.getElementById('doorCost').value, Shipping: document.getElementById('ship').value, Sheets: document.getElementById('sheets').value, Labor: document.getElementById('labor').value, TaxRate: document.getElementById('taxRate').value, Discount: document.getElementById('discount').value, Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, GrandTotal: document.getElementById('outTotal').innerText, QuoteStatus: document.getElementById('quoteStatus').value });
         try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: formData }); btn.innerText = "✅ Synced"; } catch (e) { alert("Error."); }
         setTimeout(() => { btn.innerText = "💾 Sync to Sheets"; }, 2000);
     }
@@ -167,8 +176,9 @@
     function doPrint(type) {
         document.querySelectorAll('input, textarea').forEach(el => { el.setAttribute('value', el.value); });
         document.querySelectorAll('.dynamic-row').forEach(row => { if (!row.querySelector('input[type="text"]').value) row.style.display = 'none'; });
-        if (type === 'customer') document.getElementById('pricingSection').classList.add('hide-for-print'); else document.getElementById('pricingSection').classList.remove('hide-for-print');
-        window.print(); document.getElementById('pricingSection').classList.remove('hide-for-print'); document.querySelectorAll('.dynamic-row').forEach(row => row.style.display = "");
+        const pricing = document.getElementById('pricingSection');
+        if (type === 'customer') pricing.classList.add('hide-for-print'); else pricing.classList.remove('hide-for-print');
+        window.print(); pricing.classList.remove('hide-for-print'); document.querySelectorAll('.dynamic-row').forEach(row => row.style.display = "");
     }
 </script>
 </body>
