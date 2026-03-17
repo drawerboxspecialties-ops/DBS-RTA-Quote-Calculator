@@ -63,7 +63,7 @@
                 zoom: 0.85; 
                 display: flex;
                 flex-direction: column;
-                min-height: 10.5in; /* Forces page length to pin footer */
+                min-height: 10.5in; /* This forces the page height */
             }
             body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05) !important; z-index: 9999; pointer-events: none; }
             .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
@@ -78,10 +78,18 @@
             #taxRow { display: flex !important; }
             #taxRow:empty { display: none !important; }
 
-            /* Pins the specific business info to the bottom */
+            /* MOVES BUSINESS FOOTER TO ABSOLUTE BOTTOM */
             .business-footer {
                 margin-top: auto !important; 
                 padding-top: 20px;
+            }
+
+            /* Logic to hide empty spec rows during print */
+            .dynamic-row:has(input[value=""]), 
+            .dynamic-row:has(input[value="0"]),
+            .dynamic-row:not(:has(.cabName:not([value=""]))),
+            .dynamic-row:not(:has(.doorName:not([value=""]))) {
+                display: none !important;
             }
         }
     </style>
@@ -324,7 +332,7 @@
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
         
-        // STRICT 2-DECIMAL FIX
+        // FIX FOR 3-DECIMAL ISSUE SEEN IN SCREENSHOT
         const finalTotal = sub + tax + shp;
         document.getElementById('outTotal').innerText = '$' + finalTotal.toLocaleString(undefined, {
             minimumFractionDigits: 2, 
@@ -356,8 +364,13 @@
             Subtotal: document.getElementById('outSubtotal').innerText, TaxAmount: document.getElementById('outTax').innerText, 
             GrandTotal: document.getElementById('outTotal').innerText 
         };
-        try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(allData) }); btn.innerText = "✅ Synced"; btn.style.backgroundColor = "#48BB78"; }
-        catch (e) { alert("Save error."); }
+        try {
+            const formData = new URLSearchParams();
+            for (const key in allData) { formData.append(key, allData[key]); }
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData });
+            btn.innerText = "✅ Synced Successfully";
+            btn.style.backgroundColor = "#48BB78";
+        } catch (e) { alert("Save error."); }
         setTimeout(() => { btn.disabled = false; btn.innerText = "💾 Sync/Save to Sheets"; btn.style.backgroundColor = "#3182CE"; }, 2500);
     }
 
@@ -376,16 +389,14 @@
         
         const hasTax = parseFloat(document.getElementById('outTax').innerText.replace('$', '')) > 0;
 
-        // FIXED: Programmatic row hiding for print
+        // FIXED: Programmatic row hiding for print to ensure materials show up if they have data
         document.querySelectorAll('.dynamic-row').forEach(row => {
             const nameField = row.querySelector('input[type="text"]');
             const qtyField = row.querySelector('input[type="number"]');
-            
-            // Check if name is blank OR if quantity is blank/zero
-            const isNameBlank = !nameField.value || nameField.value.trim() === "";
-            const isQtyBlank = !qtyField.value || qtyField.value === "" || parseFloat(qtyField.value) === 0;
+            const isNameEmpty = !nameField.value || nameField.value.trim() === "";
+            const isQtyEmpty = !qtyField.value || qtyField.value === "" || parseFloat(qtyField.value) === 0;
 
-            if (isNameBlank || isQtyBlank) {
+            if (isNameEmpty || isQtyEmpty) {
                 row.style.setProperty('display', 'none', 'important');
             } else {
                 row.style.setProperty('display', 'grid', 'important');
@@ -408,7 +419,7 @@
         
         window.print(); 
         
-        // Reset view back to screen defaults
+        // Reset defaults after print
         pricing.classList.remove('hide-for-print'); 
         footerInfo.classList.remove('hide-for-print');
         footerTerms.classList.remove('hide-for-print');
