@@ -130,16 +130,50 @@
         document.getElementById('carrierRow').style.display = (method === 'LTL') ? 'grid' : 'none';
     }
 
+    // FIXED RESET FUNCTION
     function resetQuoteForm() {
+        // 1. Reset standard form fields
         document.getElementById("quoteForm").reset();
+        
+        // 2. Clear values that reset() might miss (like search box and addresses)
         document.getElementById('searchPO').value = "";
+        document.getElementById('custName').value = "";
+        document.getElementById('custAcc').value = "";
+        document.getElementById('poNum').value = "";
+        document.getElementById('quotedBy').value = "";
+        document.getElementById('billAddr').value = "";
+        document.getElementById('shipAddr').value = "";
+        document.getElementById('matCost').value = "";
+        document.getElementById('doorCost').value = "";
+        document.getElementById('ship').value = "";
+        document.getElementById('sheets').value = "";
+        document.getElementById('labor').value = "";
+        document.getElementById('taxRate').value = "";
+        document.getElementById('discount').value = "";
+        document.getElementById('carrierName').value = "";
+
+        // 3. Reset Date and Default values
         document.getElementById('quoteDate').valueAsDate = new Date();
+        document.getElementById('margPct').value = "40";
+        document.getElementById('quoteStatus').value = "Quote Approval Pending";
+        document.getElementById('shipMethod').value = "DBS";
+        document.getElementById('sameAddress').checked = false;
+
+        // 4. Remove extra dynamic rows (Cabinets and Doors)
         document.querySelectorAll('#cabContainer .dynamic-row:not(:first-child)').forEach(el => el.remove());
         document.querySelectorAll('#doorContainer .dynamic-row:not(:first-child)').forEach(el => el.remove());
-        document.getElementById('margPct').value = "40";
+        
+        // 5. Clear the first row inputs
+        document.querySelector('.cabName').value = "";
+        document.querySelector('.cabCount').value = "";
+        document.querySelector('.doorName').value = "";
+        document.querySelector('.doorSqFt').value = "";
+
+        // 6. Refresh UI logic
         toggleCarrier();
         runMath();
-        alert("Form cleared.");
+        
+        alert("Form cleared completely.");
     }
 
     async function universalSearch(type) {
@@ -167,8 +201,7 @@
     function fillForm(d, fullLoad) {
         document.getElementById('custName').value = d[1]; document.getElementById('custAcc').value = d[2];
         if (fullLoad) {
-            document.getElementById('poNum').value = d[3]; document.getElementById('quotedBy').value = d[5]; 
-            document.getElementById('shipMethod').value = d[6];
+            document.getElementById('poNum').value = d[3]; document.getElementById('quotedBy').value = d[5]; document.getElementById('shipMethod').value = d[6];
             toggleCarrier(); // Trigger LTL box if needed
             document.getElementById('shipAddr').value = d[7]; document.getElementById('billAddr').value = d[8];
             document.getElementById('matCost').value = d[11]; document.getElementById('margPct').value = d[12]; document.getElementById('doorCost').value = d[13]; document.getElementById('ship').value = d[14]; document.getElementById('sheets').value = d[15]; document.getElementById('labor').value = d[16]; document.getElementById('taxRate').value = d[17]; document.getElementById('discount').value = d[21] || "";
