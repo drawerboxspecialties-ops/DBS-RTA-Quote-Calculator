@@ -50,24 +50,22 @@
 <div id="modalOverlay"><div class="modal-content"><div style="display:flex; justify-content:space-between; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:15px; font-weight:bold;"><span id="modalTitle">Select Item</span><span onclick="closeModal()" style="cursor:pointer; font-size:20px;">&times;</span></div><div id="customerList"></div></div></div>
 <div class="container">
     <div class="header-banner"><img src="dbs-logo.png" alt="DBS" class="logo"><div class="header-text"><h1 id="print-title">RTA CABINET QUOTE</h1><p>Ready-to-Assemble Custom Cabinet Boxes</p></div></div>
-    <div class="search-card"><input type="text" id="searchPO" placeholder="Search PO Number..."><button onclick="universalSearch('po')">🔍 Load PO</button></div>
-    <form id="quoteForm">
     
-    <div class="card hide-for-print" style="border: 1px solid #3182CE; background: #EBF8FF;">
-        <h2 class="card-title" style="color: #2C5282;">Office Tracking</h2>
-        <div class="grid-2">
-            <div>
-                <label>Quote Status</label>
-                <select id="quoteStatus">
-                    <option value="Quote Approval Pending">Quote Approval Pending</option>
-                    <option value="Ordered">Ordered</option>
-                    <option value="Lost">Lost</option>
-                    <option value="Assembly Sheets Sent">Assembly Sheets Sent</option>
-                    <option value="Assembly Sheets Approved">Assembly Sheets Approved</option>
-                    <option value="Shipped">Shipped</option>
-                </select>
-            </div>
-            <div></div>
+    <div class="search-card"><input type="text" id="searchPO" placeholder="Search PO Number..."><button onclick="universalSearch('po')">🔍 Load PO</button></div>
+
+    <form id="quoteForm">
+    <div class="card hide-for-print" style="border: 1px solid #3182CE; background: #EBF8FF; padding: 10px 25px;">
+        <h2 class="card-title" style="color: #2C5282; margin-bottom: 8px;">Office Tracking</h2>
+        <div style="width: 50%;">
+            <label>Quote Status</label>
+            <select id="quoteStatus" style="padding: 6px;">
+                <option value="Quote Approval Pending">Quote Approval Pending</option>
+                <option value="Ordered">Ordered</option>
+                <option value="Lost">Lost</option>
+                <option value="Assembly Sheets Sent">Assembly Sheets Sent</option>
+                <option value="Assembly Sheets Approved">Assembly Sheets Approved</option>
+                <option value="Shipped">Shipped</option>
+            </select>
         </div>
     </div>
 
