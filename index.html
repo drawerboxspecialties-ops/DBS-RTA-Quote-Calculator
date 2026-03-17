@@ -53,7 +53,6 @@
 
         .business-footer { margin-top: 20px; text-align: center; font-style: italic; font-size: 12px; line-height: 1.4; color: var(--text-main); }
 
-        /* --- STABILIZED PRINT STYLES --- */
         @media print {
             @page { size: letter; margin: 0.25in; }
             body { background: white !important; padding: 0 !important; margin: 0 !important; }
@@ -67,17 +66,13 @@
             .header-banner { padding: 12px 25px !important; margin-bottom: 12px !important; border: 1px solid #bbb; background: #f4f4f4 !important; color: black !important;}
             .header-text h1 { color: black !important; font-size: 24px !important; }
             
-            /* Ensure inputs show values in print engine */
-            input, textarea, select { 
-                border: none !important; background: transparent !important; color: black !important; font-weight: 600 !important; padding: 2px 0 !important;
-                appearance: none !important; -webkit-appearance: none !important;
-            }
-
+            /* Logic to make typed text show up in print */
+            input, textarea, select { border: none !important; background: transparent !important; color: black !important; font-weight: 600 !important; padding: 2px 0 !important; }
+            
             .total-box { border: 2px solid #000 !important; padding: 12px 20px !important; }
             .grand-total { border-top: 2px solid #000 !important; color: black !important; }
-            #taxRow { display: flex !important; }
-
-            /* Pins business info to the bottom */
+            
+            /* Pin footer to absolute bottom */
             .business-footer { margin-top: auto !important; padding-top: 20px; }
         }
     </style>
@@ -222,7 +217,7 @@
 </div>
 
 <script>
-    const scriptURL = 'PASTE_YOUR_URL_HERE';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxV7Nv6-0cqVRHOF_oE8iHpbqCrJNzVqjGsMgQ_rxxVG0otyNtDZChkCqsQvCqu17J_mw/exec';
     document.getElementById('quoteDate').valueAsDate = new Date();
 
     function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
@@ -237,7 +232,6 @@
         if (check.checked) { document.getElementById('shipAddr').value = document.getElementById('billAddr').value; }
     }
 
-    /* REVISED NEW QUOTE FUNCTION */
     function resetQuoteForm() {
         document.getElementById("quoteForm").reset();
         document.getElementById('quoteDate').valueAsDate = new Date();
@@ -351,13 +345,14 @@
         document.getElementById(id).appendChild(div);
     }
 
-    /* THE PRINT ENGINE */
     function doPrint(type) {
         const pricing = document.getElementById('pricingSection'), title = document.getElementById('print-title'), 
               footerInfo = document.getElementById('print-business-info'), footerTerms = document.getElementById('print-terms');
         
+        // Push typed values into hard attributes so print engine sees them
         document.querySelectorAll('input, textarea').forEach(el => { el.setAttribute('value', el.value); });
 
+        // Logic to hide empty dynamic rows
         document.querySelectorAll('.dynamic-row').forEach(row => {
             const name = row.querySelector('input[type="text"]').value;
             if (!name || name.trim() === "") { row.style.setProperty('display', 'none', 'important'); } 
