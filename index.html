@@ -57,7 +57,7 @@
         <h2 class="card-title" style="color: #2C5282; margin-bottom: 8px;">Office Tracking</h2>
         <div style="width: 50%;">
             <label>Quote Status</label>
-            <select id="quoteStatus" style="padding: 6px;">
+            <select id="quoteStatus">
                 <option value="Quote Approval Pending">Quote Approval Pending</option>
                 <option value="Ordered">Ordered</option>
                 <option value="Lost">Lost</option>
@@ -80,7 +80,11 @@
         </div>
         <div class="grid-2">
             <div><label>Quoted By</label><input type="text" id="quotedBy"></div>
-            <div><label>Ship Method</label><select id="shipMethod"><option value="DBS">DBS</option><option value="WC">WC</option><option value="LTL">LTL</option></select></div>
+            <div><label>Ship Method</label><select id="shipMethod" onchange="toggleCarrier()"><option value="DBS">DBS</option><option value="WC">WC</option><option value="LTL">LTL</option></select></div>
+        </div>
+        <div class="grid-2" id="carrierRow" style="display: none;">
+            <div></div>
+            <div><label>Carrier Name</label><input type="text" id="carrierName" placeholder="Enter Carrier..."></div>
         </div>
         <div class="grid-2">
             <div><label>Bill To Address</label><textarea id="billAddr" rows="2" oninput="syncAddress()"></textarea></div>
@@ -93,7 +97,6 @@
         <div id="doorContainer" style="margin-top: 10px;"><div class="dynamic-row"><div><label>Door Type</label><input type="text" class="doorName" list="prevDoors"></div><div><label>Door Sq Ft</label><input type="number" class="doorSqFt" oninput="runMath()"></div><button type="button" class="action-btn" style="background:var(--brand-blue)" onclick="addRow('doorContainer')">+</button></div></div>
     </div>
     <datalist id="prevMaterials"></datalist><datalist id="prevDoors"></datalist>
-
     <div class="card hide-for-print" id="pricingSection">
         <h2 class="card-title">Internal Pricing</h2>
         <div class="grid-2"><div><label>Material Cost ($)</label><input type="number" id="matCost" oninput="runMath()"></div><div><label>Margin (%)</label><input type="number" id="margPct" value="40" oninput="runMath()"></div></div>
@@ -121,8 +124,24 @@
     document.getElementById('quoteDate').valueAsDate = new Date();
     function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
     function syncAddress() { if (document.getElementById('sameAddress').checked) { document.getElementById('shipAddr').value = document.getElementById('billAddr').value; } }
-    function resetQuoteForm() { document.getElementById("quoteForm").reset(); document.getElementById('quoteDate').valueAsDate = new Date(); document.querySelectorAll('.dynamic-row:not(:first-child)').forEach(el => el.remove()); runMath(); alert("Form cleared."); }
     
+    function toggleCarrier() {
+        const method = document.getElementById('shipMethod').value;
+        document.getElementById('carrierRow').style.display = (method === 'LTL') ? 'grid' : 'none';
+    }
+
+    function resetQuoteForm() {
+        document.getElementById("quoteForm").reset();
+        document.getElementById('searchPO').value = "";
+        document.getElementById('quoteDate').valueAsDate = new Date();
+        document.querySelectorAll('#cabContainer .dynamic-row:not(:first-child)').forEach(el => el.remove());
+        document.querySelectorAll('#doorContainer .dynamic-row:not(:first-child)').forEach(el => el.remove());
+        document.getElementById('margPct').value = "40";
+        toggleCarrier();
+        runMath();
+        alert("Form cleared.");
+    }
+
     async function universalSearch(type) {
         let val = (type === 'po') ? document.getElementById('searchPO').value : document.getElementById('custName').value;
         if (!val) return alert("Search required.");
@@ -148,7 +167,10 @@
     function fillForm(d, fullLoad) {
         document.getElementById('custName').value = d[1]; document.getElementById('custAcc').value = d[2];
         if (fullLoad) {
-            document.getElementById('poNum').value = d[3]; document.getElementById('quotedBy').value = d[5]; document.getElementById('shipMethod').value = d[6]; document.getElementById('shipAddr').value = d[7]; document.getElementById('billAddr').value = d[8];
+            document.getElementById('poNum').value = d[3]; document.getElementById('quotedBy').value = d[5]; 
+            document.getElementById('shipMethod').value = d[6];
+            toggleCarrier(); // Trigger LTL box if needed
+            document.getElementById('shipAddr').value = d[7]; document.getElementById('billAddr').value = d[8];
             document.getElementById('matCost').value = d[11]; document.getElementById('margPct').value = d[12]; document.getElementById('doorCost').value = d[13]; document.getElementById('ship').value = d[14]; document.getElementById('sheets').value = d[15]; document.getElementById('labor').value = d[16]; document.getElementById('taxRate').value = d[17]; document.getElementById('discount').value = d[21] || "";
             document.getElementById('quoteStatus').value = d[22] || "Quote Approval Pending";
             runMath(); alert("Quote Loaded.");
@@ -189,7 +211,6 @@
         header.innerText = "RTA CABINET QUOTE"; document.getElementById('pricingSection').classList.remove('hide-for-print'); document.querySelectorAll('.dynamic-row').forEach(row => row.style.display = "");
     }
 
-    // NEW LOGIC TO LOAD PREVIOUS MATERIALS
     async function loadMaterialDropdowns() {
         try {
             const response = await fetch(`${scriptURL}?getMaterials=true`);
