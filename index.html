@@ -49,7 +49,7 @@
         
         .signature-section { margin-top: 30px; display: flex; align-items: baseline; }
         .sign-here-label { font-weight: bold; font-size: 13px; color: var(--text-main); white-space: nowrap; }
-        .sign-line { flex-grow: 1; border-bottom: 1px solid #2D3748; margin-left: 10px; }
+        .sign-line { flex-grow: 1; border-bottom: 1.1px solid #000; margin-left: 10px; }
 
         .business-footer { margin-top: 20px; text-align: center; font-style: italic; font-size: 12px; line-height: 1.4; color: var(--text-main); }
 
@@ -63,7 +63,7 @@
                 zoom: 0.85; 
                 display: flex;
                 flex-direction: column;
-                min-height: 10.4in; /* Ensures footer pins to bottom of page */
+                min-height: 10.5in; /* Forces page length to pin footer */
             }
             body::after { content: "DBS"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 180px; font-weight: 900; color: rgba(0,0,0,0.05) !important; z-index: 9999; pointer-events: none; }
             .btn-group, .action-btn, .search-card, .hide-for-print, .lookup-btn, #modalOverlay { display: none !important; }
@@ -78,9 +78,9 @@
             #taxRow { display: flex !important; }
             #taxRow:empty { display: none !important; }
 
-            /* Pin only the address/logo info to the bottom */
+            /* Pins the specific business info to the bottom */
             .business-footer {
-                margin-top: auto !important;
+                margin-top: auto !important; 
                 padding-top: 20px;
             }
         }
@@ -323,8 +323,13 @@
         document.getElementById('outSubtotal').innerText = '$' + sub.toFixed(2);
         document.getElementById('outShip').innerText = '$' + shp.toFixed(2);
         document.getElementById('outTax').innerText = '$' + tax.toFixed(2);
-        // Corrects 3-decimal issue and ensures 2 decimals strictly
-        document.getElementById('outTotal').innerText = '$' + (sub + tax + shp).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+        
+        // STRICT 2-DECIMAL FIX
+        const finalTotal = sub + tax + shp;
+        document.getElementById('outTotal').innerText = '$' + finalTotal.toLocaleString(undefined, {
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2
+        });
         
         document.getElementById('taxRow').style.display = (tax > 0) ? "flex" : "none";
     }
@@ -371,14 +376,19 @@
         
         const hasTax = parseFloat(document.getElementById('outTax').innerText.replace('$', '')) > 0;
 
-        // PROGRAMMATICALLY MARK EMPTY ROWS TO HIDE THEM IN PRINT
+        // FIXED: Programmatic row hiding for print
         document.querySelectorAll('.dynamic-row').forEach(row => {
-            const name = row.querySelector('input[type="text"]').value;
-            const qty = row.querySelector('input[type="number"]').value;
-            if (!name || !qty || qty == 0) {
-                row.classList.add('hide-for-print');
+            const nameField = row.querySelector('input[type="text"]');
+            const qtyField = row.querySelector('input[type="number"]');
+            
+            // Check if name is blank OR if quantity is blank/zero
+            const isNameBlank = !nameField.value || nameField.value.trim() === "";
+            const isQtyBlank = !qtyField.value || qtyField.value === "" || parseFloat(qtyField.value) === 0;
+
+            if (isNameBlank || isQtyBlank) {
+                row.style.setProperty('display', 'none', 'important');
             } else {
-                row.classList.remove('hide-for-print');
+                row.style.setProperty('display', 'grid', 'important');
             }
         });
 
@@ -398,13 +408,13 @@
         
         window.print(); 
         
-        // Reset view
+        // Reset view back to screen defaults
         pricing.classList.remove('hide-for-print'); 
         footerInfo.classList.remove('hide-for-print');
         footerTerms.classList.remove('hide-for-print');
         title.innerText = "RTA CABINET QUOTE";
         taxRow.style.display = hasTax ? "flex" : "none";
-        document.querySelectorAll('.dynamic-row').forEach(row => row.classList.remove('hide-for-print'));
+        document.querySelectorAll('.dynamic-row').forEach(row => row.style.display = "");
     }
 
     async function loadMaterialDropdowns() {
